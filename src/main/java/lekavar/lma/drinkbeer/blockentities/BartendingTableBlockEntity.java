@@ -6,7 +6,6 @@ import lekavar.lma.drinkbeer.items.BeerMugItem;
 import lekavar.lma.drinkbeer.items.MixedBeerBlockItem;
 import lekavar.lma.drinkbeer.managers.MixedBeerManager;
 import lekavar.lma.drinkbeer.registries.BlockEntityRegistry;
-import lekavar.lma.drinkbeer.utils.ItemStackHelper;
 import lekavar.lma.drinkbeer.utils.beer.Beers;
 import lekavar.lma.drinkbeer.utils.mixedbeer.Spices;
 import net.minecraft.core.BlockPos;
@@ -97,7 +96,7 @@ public class BartendingTableBlockEntity extends BaseContainerBlockEntity {
 
     public void tickServer() {
         ItemStack input = items.get(0);
-        if (ItemStackHelper.isAirOrEmpty(input)) {
+        if (input.isEmpty()) {
             items.set(OUTPUT_SLOT_INDEX, ItemStack.EMPTY);
             setChanged();
             return;
@@ -126,7 +125,7 @@ public class BartendingTableBlockEntity extends BaseContainerBlockEntity {
                     //If maximum amount of spice is already in beer, there's no need to check spiceSlot
                     if (oriSpiceList.size() < MixedBeerManager.MAX_SPICES_COUNT) {
                         //Check if spiceSlot is not empty
-                        if (!ItemStackHelper.isAirOrEmpty(stack)) {
+                        if (!stack.isEmpty()) {
                             //If there are enough spices, insert new spice in the middle or at the start
                             if (i < oriSpiceList.size()) {
                                 oriSpiceList.add(i, Spices.byItem(stack.getItem()).getId());
