@@ -12,6 +12,16 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
+repositories {
+    mavenCentral()
+    maven {
+        url "https://www.cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
+}
+
 version = '2.4.0'
 group = 'lekavar.lma' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'drinkbeer-1.18.2'
@@ -118,6 +128,10 @@ dependencies {
     // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft 'net.minecraftforge:forge:1.18.2-40.1.0'
+
+    // Jade
+    compileOnly fg.deobf("curse.maven:jade-324717:3822510")
+    runtimeOnly fg.deobf("curse.maven:jade-324717:3822510")
 
     // You may put jars on which you depend on in ./libs or you may define them like so..
     // compile "some.group:artifact:version:classifier"

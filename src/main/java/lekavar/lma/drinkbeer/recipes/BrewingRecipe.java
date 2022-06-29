@@ -21,6 +21,8 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class BrewingRecipe implements Recipe<IBrewingInventory> {
+    public static final int INPUT_SIZE = 4;
+
     private final ResourceLocation id;
     private final NonNullList<Ingredient> input;
     private final ItemStack cup;

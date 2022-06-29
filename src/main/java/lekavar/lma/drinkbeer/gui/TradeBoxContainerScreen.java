@@ -6,6 +6,7 @@ import lekavar.lma.drinkbeer.DrinkBeer;
 import lekavar.lma.drinkbeer.blocks.TradeboxBlock;
 import lekavar.lma.drinkbeer.managers.TradeBoxManager;
 import lekavar.lma.drinkbeer.networking.NetWorking;
+import lekavar.lma.drinkbeer.utils.Convert;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.components.ImageButton;
@@ -52,7 +53,7 @@ public class TradeBoxContainerScreen extends AbstractContainerScreen<TradeBoxCon
         blit(stack, x, y, 0, 0, backgroundWidth, backgroundHeight);
         if (container.isCooling()) {
             blit(stack, x + 84, y + 25, 178, 38, 72, 36);
-            String timeStr = convertTickToTime(container.getCoolingTime());
+            String timeStr = Convert.tickToTime(container.getCoolingTime());
             font.draw(stack, timeStr, x + 114, y + 39, new Color(64, 64, 64, 255).getRGB());
         } else if (container.isTrading()) {
             if (isHovering(157, 6, 13, 13, (double) mouseX, (double) mouseY)) {
@@ -71,17 +72,6 @@ public class TradeBoxContainerScreen extends AbstractContainerScreen<TradeBoxCon
                             language.getOrDefault(TradeBoxManager.getResidentTranslationKey(container.getResidentId()));
             font.draw(stack, locationAndResidentStr, x + 85, y + 63, new Color(64, 64, 64, 255).getRGB());
         }
-    }
-
-    public String convertTickToTime(int tick) {
-        String result;
-        if (tick > 0) {
-            double time = (double) tick / 20;
-            int m = (int) (time / 60);
-            int s = (int) (time % 60);
-            result = m + ":" + s;
-        } else result = "";
-        return result;
     }
 
     @Override
