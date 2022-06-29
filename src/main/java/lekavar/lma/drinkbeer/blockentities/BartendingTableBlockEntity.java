@@ -80,14 +80,15 @@ public class BartendingTableBlockEntity extends BaseContainerBlockEntity {
         }
     }
     public int getInputSpicesNum(){
+        int ret = 0;
         for(int i = 0; i < MixedBeerManager.MAX_SPICES_COUNT; i++)
         {
-            if(items.get(1 + i).isEmpty())
+            if(!items.get(1 + i).isEmpty())
             {
-                return i;
+                ++ret;
             }
         }
-        return MixedBeerManager.MAX_SPICES_COUNT;
+        return ret;
     }
 
     private void resetUsedSlots(){
