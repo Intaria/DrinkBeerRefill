@@ -49,6 +49,11 @@ description='Add placeable beer mug and drink it!'
     versionRange="[1.18.1,1.19)"
     ordering="NONE"
     side="BOTH"
+[[dependencies.examplemod]]
+    modId="jade"
+    mandatory=false
+    versionRange="[5.2.1,)"
+    ordering="NONE"
 
 [[mods]] #mandatory
 # The modid of the mod
