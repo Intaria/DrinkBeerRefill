@@ -3,8 +3,7 @@ This is an unofficial fork of **Drink Beer forge** mod,
 providing full fabric-3.0.2 version features in 1.19.2+ forge version and built-in JEI/Jade support, as well as other new features.
 
 ## Why next?
-**WIP**
-
+Reason is simple: New Beers, New Flavor, Extendable Api, Compat With Other Mods.
 
 ## Credit
 Thank following person for their amazing ground works!
@@ -15,7 +14,7 @@ Thank following person for their amazing ground works!
 * [yanang007](https://github.com/yanang007)  made Jade integration.
 
 
-### Previous version repo:
-[1.16.5 Repo](https://github.com/Lekavar/DrinkBeer-Forge1.16.5-)
-[1.17.1 Repo](https://github.com/Lekavar/DrinkBeer-Forge1.17.1-)
-[1.18.1 Repo](https://github.com/Naetheline/DrinkBeer-Forge1.18.1)
+### Previous version repository:
+[1.16.5 Repo](https://github.com/Lekavar/DrinkBeer-Forge1.16.5-)  
+[1.17.1 Repo](https://github.com/Lekavar/DrinkBeer-Forge1.17.1-)  
+[1.18.1 Repo](https://github.com/Naetheline/DrinkBeer-Forge1.18.1)  

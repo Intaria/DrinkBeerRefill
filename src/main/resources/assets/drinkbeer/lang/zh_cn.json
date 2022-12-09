@@ -116,6 +116,7 @@
   "drinkbeer.jei.tooltip.cup_1": "你需要将 ",
   "drinkbeer.jei.tooltip.cup_2": " 放在酒杯槽来开始酿造。",
 
-  "config.jade.plugin_drinkbeer.beer_barrel": "啤酒桶Jade设置",
-  "config.jade.plugin_drinkbeer.trade_box": "贸易箱Jade设置"
+  "config.jade.plugin_drinkbeer.beer_barrel": "啤酒桶",
+  "config.jade.plugin_drinkbeer.trade_box": "贸易箱",
+  "config.jade.plugin_drinkbeer.mixed_beer": "风味啤酒"
 }

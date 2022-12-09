@@ -116,6 +116,7 @@
   "drinkbeer.jei.tooltip.cup_1": "To Start Brewing, You Need Place ",
   "drinkbeer.jei.tooltip.cup_2": " into Cup Slot.",
 
-  "config.jade.plugin_drinkbeer.beer_barrel": "Beer Barrel Jade Config",
-  "config.jade.plugin_drinkbeer.trade_box": "Trade Box Jade Config"
+  "config.jade.plugin_drinkbeer.beer_barrel": "Beer Barrel",
+  "config.jade.plugin_drinkbeer.trade_box": "Trade Box",
+  "config.jade.plugin_drinkbeer.mixed_beer": "Mixed Beer"
 }

@@ -40,7 +40,7 @@ public class BeerBarrelComponentProvider implements IBlockComponentProvider, ISe
         int timeRemaining = accessor.getServerData().getInt(KEY_TIME_REMAINING);
 
         if (!output.isEmpty()) {
-            tooltip.remove(Identifiers.UNIVERSAL_ITEM_STORAGE); // remove Jade's default inventory tooltip
+            // tooltip.remove(Identifiers.UNIVERSAL_ITEM_STORAGE); // remove Jade's default inventory tooltip
 
             Level level = accessor.getLevel();
             List<BrewingRecipe> recipes = level.getRecipeManager().getAllRecipesFor(RecipeRegistry.RECIPE_TYPE_BREWING.get());

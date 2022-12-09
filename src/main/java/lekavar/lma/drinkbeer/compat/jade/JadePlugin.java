@@ -7,7 +7,6 @@ import lekavar.lma.drinkbeer.blocks.MixedBeerBlock;
 import lekavar.lma.drinkbeer.blocks.TradeboxBlock;
 import lekavar.lma.drinkbeer.compat.jade.provider.BeerBarrelComponentProvider;
 import lekavar.lma.drinkbeer.compat.jade.provider.MixedBeerComponentProvider;
-import lekavar.lma.drinkbeer.compat.jade.provider.MixedBeerHeadComponentProvider;
 import lekavar.lma.drinkbeer.compat.jade.provider.TradeBoxComponentProvider;
 import snownee.jade.api.*;
 
@@ -18,9 +17,8 @@ public class JadePlugin implements IWailaPlugin {
 		registration.registerBlockComponent(BeerBarrelComponentProvider.INSTANCE, BeerBarrelBlock.class);
 		registration.registerBlockComponent(TradeBoxComponentProvider.INSTANCE, TradeboxBlock.class);
 		registration.registerBlockComponent(MixedBeerComponentProvider.INSTANCE, MixedBeerBlock.class);
-		registration.registerBlockComponent(MixedBeerHeadComponentProvider.INSTANCE, MixedBeerBlock.class);
 
-		registration.registerBlockIcon(MixedBeerHeadComponentProvider.INSTANCE, MixedBeerBlock.class);
+		registration.registerBlockIcon(MixedBeerComponentProvider.INSTANCE, MixedBeerBlock.class);
 	}
 
 	@Override
