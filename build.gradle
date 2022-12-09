@@ -6,9 +6,9 @@ plugins {
     id 'maven-publish'
 }
 
-version = '0.1.0'
+version = mod_version
 group = 'lekavar.lma' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'drinkbeer-next-${artifact_minecraft_version}'
+archivesBaseName = "drinkbeer-refill-${artifact_minecraft_version}"
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17) // Mojang ships Java 8 to end users, so your mod should target Java 8.
 
