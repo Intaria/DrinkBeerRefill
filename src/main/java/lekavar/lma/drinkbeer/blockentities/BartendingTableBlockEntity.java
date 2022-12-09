@@ -1,6 +1,5 @@
 package lekavar.lma.drinkbeer.blockentities;
 
-import lekavar.lma.drinkbeer.blocks.BartendingTableBlock;
 import lekavar.lma.drinkbeer.items.BeerMugItem;
 import lekavar.lma.drinkbeer.items.MixedBeerBlockItem;
 import lekavar.lma.drinkbeer.items.SpiceBlockItem;
@@ -10,16 +9,18 @@ import lekavar.lma.drinkbeer.utils.beer.Beers;
 import lekavar.lma.drinkbeer.utils.mixedbeer.Spices;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.Container;
-import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
@@ -53,8 +54,7 @@ public class BartendingTableBlockEntity extends BlockEntity {
         if(spiceList.size()>=3)
             return false;
         inv.setItem(0, itemStack);
-        inv.setChanged();
-        setChanged();
+        markDirty();
         return true;
     }
 
@@ -77,58 +77,67 @@ public class BartendingTableBlockEntity extends BlockEntity {
         ItemStack flavoredBeer = MixedBeerManager.genMixedBeerItemStack(beerId, spiceList);
         inv.setItem(0, ItemStack.EMPTY);
         inv.setItem(1, flavoredBeer);
-        inv.setChanged();
-        setChanged();
+        markDirty();
         return true;
     }
 
     public ItemStack takeBeer(boolean simulate){
-        var ret = inv.getItem(0);
+        var ret = inv.getItem(0).copy();
         if(ret.isEmpty())
-            ret = inv.getItem(1);
-        if(!simulate){
+            ret = inv.getItem(1).copy();
+        if(!simulate && !ret.isEmpty()){
             inv.clearContent();
-            inv.setChanged();
-            setChanged();
+            markDirty();
         }
-        return ret.copy();
+        return ret;
     }
 
+
+    public void markDirty() {
+        var pos = getBlockPos();
+        var bs = level.getBlockState(pos);
+        level.sendBlockUpdated(pos,bs,bs, Block.UPDATE_CLIENTS);
+        setChanged();
+    }
 
     @Override
     public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
         handleUpdateTag(pkt.getTag());
     }
 
-    @Nullable
     @Override
-    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        // Will get tag from #getUpdateTag
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @Override
     public CompoundTag getUpdateTag() {
         CompoundTag tag = super.getUpdateTag();
-        tag.put("inv",inv.createTag());
+        tag.put("input", inv.getItem(0).serializeNBT());
+        tag.put("output", inv.getItem(1).serializeNBT());
         return tag;
     }
 
     @Override
     public void handleUpdateTag(CompoundTag tag) {
         super.handleUpdateTag(tag);
-        inv.fromTag((ListTag) tag.get("inv"));
+        inv.setItem(0,ItemStack.of((CompoundTag) tag.get("input")));
+        inv.setItem(1,ItemStack.of((CompoundTag) tag.get("output")));
     }
 
     @Override
     public void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
-        tag.put("inv",inv.createTag());
+        tag.put("input", inv.getItem(0).serializeNBT());
+        tag.put("output", inv.getItem(1).serializeNBT());
     }
 
     @Override
     public void load(@Nonnull CompoundTag tag) {
         super.load(tag);
-        inv.fromTag((ListTag) tag.get("inv"));
+        inv.setItem(0,ItemStack.of((CompoundTag) tag.get("input")));
+        inv.setItem(1,ItemStack.of((CompoundTag) tag.get("output")));
     }
 
     @Override
