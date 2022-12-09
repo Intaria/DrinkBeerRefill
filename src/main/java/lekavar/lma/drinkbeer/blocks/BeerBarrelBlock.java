@@ -65,7 +65,7 @@ public class BeerBarrelBlock extends BaseEntityBlock {
 
             BlockEntity blockentity = world.getBlockEntity(pos);
             if (blockentity instanceof BeerBarrelBlockEntity) {
-                NetworkHooks.openGui((ServerPlayer) player, (BeerBarrelBlockEntity) blockentity, (FriendlyByteBuf packerBuffer) -> {
+                NetworkHooks.openScreen((ServerPlayer) player, (BeerBarrelBlockEntity) blockentity, (FriendlyByteBuf packerBuffer) -> {
                     packerBuffer.writeBlockPos(blockentity.getBlockPos());
                 });
             }

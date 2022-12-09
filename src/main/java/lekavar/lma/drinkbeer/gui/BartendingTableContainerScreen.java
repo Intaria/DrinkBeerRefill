@@ -7,15 +7,13 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
-import java.awt.*;
-
-public class BartendingTableContainerScreen extends AbstractContainerScreen<BartendingTableContainer> {
+public class BartendingTableContainerScreen extends AbstractContainerScreen<BartendingTableMenu> {
     private final ResourceLocation BARTENDING_TABLE_CONTAINER_RESOURCE = new ResourceLocation("drinkbeer", "textures/gui/container/bartending_table.png");
     private final int textureWidth = 176;
     private final int textureHeight = 166;
     private Inventory inventory;
 
-    public BartendingTableContainerScreen(BartendingTableContainer screenContainer, Inventory inv, Component title) {
+    public BartendingTableContainerScreen(BartendingTableMenu screenContainer, Inventory inv, Component title) {
         super(screenContainer, inv, title);
         this.imageWidth = textureWidth;
         this.imageHeight = textureHeight;

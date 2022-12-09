@@ -30,7 +30,7 @@
   "block.drinkbeer.recipe_board_beer_mug_haars_icey_pale_lager": "Haar's Icey Pale Lager Recipe Board",
   "block.drinkbeer.recipe_board_beer_mug_pumpkin_kvass": "Pumpkin Kvass Recipe Board",
   "block.drinkbeer.recipe_board_beer_mug_night_howl_kvass": "Night Howl Kvass Recipe Board",
-"block.drinkbeer.recipe_board_beer_mug_frothy_pink_eggnog": "Frothy Pink Eggnog Recipe Board",
+  "block.drinkbeer.recipe_board_beer_mug_frothy_pink_eggnog": "Frothy Pink Eggnog Recipe Board",
 
   "item.drinkbeer.beer_mug.tooltip": "Haste 1:00",
   "item.drinkbeer.beer_mug_blaze_stout.tooltip":"Fire Resistance 1:30",
@@ -108,5 +108,14 @@
   "drinkbeer.flavor.luscious.tooltip" : "Health + 4",
   "drinkbeer.flavor.nutty1.tooltip" : "Hunger + 5",
   "drinkbeer.flavor.mellow.tooltip" : "Resistance 1:20",
-  "drinkbeer.flavor.drying.tooltip" : "Absorbs water in front of you"
+  "drinkbeer.flavor.drying.tooltip" : "Absorbs water in front of you",
+
+  "drinkbeer.jei.title.brewing": "Brewing",
+  "drinkbeer.jei.tooltip.brewing": "Brewing Time: ",
+  "drinkbeer.jei.tooltip.cup_slot": "The Cup Slot",
+  "drinkbeer.jei.tooltip.cup_1": "To Start Brewing, You Need Place ",
+  "drinkbeer.jei.tooltip.cup_2": " into Cup Slot.",
+
+  "config.jade.plugin_drinkbeer.beer_barrel": "Beer Barrel Jade Config",
+  "config.jade.plugin_drinkbeer.trade_box": "Trade Box Jade Config"
 }

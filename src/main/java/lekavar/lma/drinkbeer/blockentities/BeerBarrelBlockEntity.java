@@ -1,6 +1,6 @@
 package lekavar.lma.drinkbeer.blockentities;
 
-import lekavar.lma.drinkbeer.gui.BeerBarrelContainer;
+import lekavar.lma.drinkbeer.gui.BeerBarrelMenu;
 import lekavar.lma.drinkbeer.recipes.BrewingRecipe;
 import lekavar.lma.drinkbeer.recipes.IBrewingInventory;
 import lekavar.lma.drinkbeer.registries.BlockEntityRegistry;
@@ -10,7 +10,6 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Inventory;
@@ -209,18 +208,18 @@ public class BeerBarrelBlockEntity extends BaseContainerBlockEntity implements I
 
     @Override
     public Component getDisplayName() {
-        return new TranslatableComponent("block.drinkbeer.beer_barrel");
+        return Component.translatable("block.drinkbeer.beer_barrel");
     }
 
     @Override
     protected Component getDefaultName() {
-        return new TranslatableComponent("block.drinkbeer.beer_barrel");
+        return Component.translatable("block.drinkbeer.beer_barrel");
     }
 
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int id, Inventory inventory, Player player) {
-        return new BeerBarrelContainer(id, this, syncData, inventory, this);
+        return new BeerBarrelMenu(id, this, syncData, inventory, this);
     }
 
     @Override

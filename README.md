@@ -3,7 +3,8 @@ This is an unofficial fork (Well, not really, due to the fact MarbleGateKeeper i
 providing full fabric-3.0.2 version features in 1.19.2+ forge version and built-in JEI/Jade support, as well as other new features.
 
 ## Why next?
-WIP
+**WIP**
+
 
 ## Credit
 Thank following person for their amazing ground works!

@@ -1,27 +1,28 @@
 package lekavar.lma.drinkbeer.compat.jade.provider;
 
+import lekavar.lma.drinkbeer.DrinkBeer;
 import lekavar.lma.drinkbeer.blockentities.TradeBoxBlockEntity;
 import lekavar.lma.drinkbeer.managers.TradeBoxManager;
 import lekavar.lma.drinkbeer.utils.Convert;
 import lekavar.lma.drinkbeer.utils.ItemStackHelper;
-import mcp.mobius.waila.api.*;
-import mcp.mobius.waila.api.config.IPluginConfig;
-import mcp.mobius.waila.api.ui.IElement;
-import mcp.mobius.waila.api.ui.IElementHelper;
-import mcp.mobius.waila.impl.ui.ProgressArrowElement;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import snownee.jade.api.*;
+import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.ui.IElement;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.*;
 import net.minecraftforge.items.ItemStackHandler;
-import snownee.jade.VanillaPlugin;
+import snownee.jade.api.ui.IElementHelper;
+import snownee.jade.impl.ui.ProgressArrowElement;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TradeBoxComponentProvider implements IComponentProvider, IServerDataProvider<BlockEntity> {
+public class TradeBoxComponentProvider implements IBlockComponentProvider, IServerDataProvider<BlockEntity> {
     public static TradeBoxComponentProvider INSTANCE = new TradeBoxComponentProvider();
     public static final String KEY_COOLING_TIME = "coolingTime";
     public static final String KEY_GOODS_FROM = "goodsFrom";
@@ -69,7 +70,7 @@ public class TradeBoxComponentProvider implements IComponentProvider, IServerDat
 
             tooltip.add(List.of(
                     new ProgressArrowElement(1 - (float) coolingTime / maxCoolingTime),
-                    helper.text(new TextComponent(Convert.tickToTime(coolingTime)))
+                    helper.text(Component.literal(Convert.tickToTime(coolingTime)))
             ));
         }
     }
@@ -79,9 +80,9 @@ public class TradeBoxComponentProvider implements IComponentProvider, IServerDat
      * which will automatically extract trade box's inventory
      * and pass it to client through ServerData["jadeHandler"].
      *
-     * However, the number of items InventoryProvider will shows
+     * However, the number of items InventoryProvider will show
      * is limited to @see JadeCommonConfig#inventoryNormalShowAmount.
-     * @see snownee.jade.addon.forge.InventoryProvider#append(ITooltip, Accessor)
+     * @see snownee.jade.addon.universal.ItemStorageProvider#append(ITooltip, Accessor, IPluginConfig)
      */
     private List<IElement> getInventoryTooltip(ITooltip tooltip, BlockAccessor accessor) {
         List<IElement> itemElements = null;
@@ -103,7 +104,7 @@ public class TradeBoxComponentProvider implements IComponentProvider, IServerDat
         }
 
         if (itemElements != null) {
-            tooltip.remove(VanillaPlugin.INVENTORY);
+            tooltip.remove(Identifiers.UNIVERSAL_ITEM_STORAGE);
         }
         return itemElements;
     }
@@ -141,5 +142,10 @@ public class TradeBoxComponentProvider implements IComponentProvider, IServerDat
             data.putInt(KEY_GOODS_FROM, goodsFromLocNum);
             data.putInt(KEY_GOODS_TO, goodsToLocNum);
         }
+    }
+
+    @Override
+    public ResourceLocation getUid() {
+        return new ResourceLocation(DrinkBeer.MOD_ID,"trade_box");
     }
 }

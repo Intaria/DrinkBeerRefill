@@ -1,9 +1,5 @@
 package lekavar.lma.drinkbeer.compat.jade.provider;
 
-import mcp.mobius.waila.api.ITooltip;
-import mcp.mobius.waila.api.ui.*;
-import mcp.mobius.waila.impl.Tooltip;
-import mcp.mobius.waila.impl.ui.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -11,6 +7,10 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.fluids.FluidStack;
 import org.jetbrains.annotations.Nullable;
 import snownee.jade.Jade;
+import snownee.jade.api.ITooltip;
+import snownee.jade.api.ui.*;
+import snownee.jade.impl.Tooltip;
+import snownee.jade.impl.ui.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -53,9 +53,6 @@ public class JadeHelper {
         return totalHeight;
     }
 
-    /**
-     * @see Jade#smallItem(IElementHelper, ItemStack) 
-     */
     public static IElement createCenteredItem(IElementHelper helper, ItemStack stack, float scale, float rowHeight)
     {
         Vec2 standardSize = new Vec2(rowHeight, rowHeight);
@@ -356,6 +353,11 @@ public class JadeHelper {
         }
 
         @Override
+        public IElement smallItem(ItemStack itemStack) {
+            return null;
+        }
+
+        @Override
         public IElement fluid(FluidStack fluidStack) {
             IElement ret;
             if (helper != null) {
@@ -367,6 +369,7 @@ public class JadeHelper {
             return track(ret);
         }
 
+        @SuppressWarnings("all")
         @Override
         public IElement progress(float v, @Nullable Component component, IProgressStyle style, @Nullable IBorderStyle borderStyle) {
             IElement ret;
@@ -374,11 +377,29 @@ public class JadeHelper {
                 ret = helper.progress(v, component, style, borderStyle);
             }
             else {
-                ret = new ProgressElement(v, component, (ProgressStyle)style, (BorderStyle)borderStyle);
+                var boxStyle = BoxStyle.DEFAULT;
+                if(borderStyle!=null && borderStyle instanceof BorderStyle borderStyle1){
+                    boxStyle.borderColor = borderStyle1.color;
+                    boxStyle.borderWidth = borderStyle1.width;
+                }
+                ret = new ProgressElement(v, component, (ProgressStyle)style, boxStyle, false);
             }
             return track(ret);
         }
 
+        @Override
+        public IElement progress(float v, @Nullable Component component, IProgressStyle iProgressStyle, IBoxStyle iBoxStyle, boolean b) {
+            IElement ret;
+            if (helper != null) {
+                ret = helper.progress(v, component, iProgressStyle, iBoxStyle, b);
+            }
+            else {
+                ret = new ProgressElement(v, component, iProgressStyle, iBoxStyle, b);
+            }
+            return track(ret);
+        }
+
+        @SuppressWarnings("all")
         @Override
         public IElement box(ITooltip tooltip, @Nullable IBorderStyle border) {
             IElement ret;
@@ -386,9 +407,21 @@ public class JadeHelper {
                 ret = helper.box(tooltip, border);
             }
             else {
-                ret = new BoxElement((Tooltip)tooltip, (BorderStyle)border);
+                ret = new BoxElement((Tooltip)tooltip, (IBoxStyle) border);
             }
             return track(ret);
+        }
+
+        @Override
+        public IBoxElement box(ITooltip iTooltip, IBoxStyle iBoxStyle) {
+            IElement ret;
+            if (helper != null) {
+                ret = helper.box(iTooltip, iBoxStyle);
+            }
+            else {
+                ret = new BoxElement((Tooltip)iTooltip, iBoxStyle);
+            }
+            return (IBoxElement) track(ret);
         }
 
         @Override
@@ -401,6 +434,7 @@ public class JadeHelper {
             }
         }
 
+        @SuppressWarnings("all")
         @Override
         public IBorderStyle borderStyle() {
             if (helper != null) {

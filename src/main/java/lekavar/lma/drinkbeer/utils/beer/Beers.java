@@ -8,7 +8,7 @@ import net.minecraft.world.level.block.Block;
 import java.util.Arrays;
 import java.util.Optional;
 
-public enum  Beers {
+public enum Beers {
     BEER_MUG(1, ItemRegistry.BEER_MUG.get(), true/*,  new BeerRecipe()
             .setBeerResultNum(4).setBrewingTime(24000)
             .addMaterial(3, Items.WHEAT).addMaterial(Items.WATER_BUCKET)*/),

@@ -1,7 +1,7 @@
 package lekavar.lma.drinkbeer.blocks;
 
 import lekavar.lma.drinkbeer.registries.BlockRegistry;
-import lekavar.lma.drinkbeer.registries.ParticleRegistry;
+import lekavar.lma.drinkbeer.registries.ParticleTypeRegistry;
 import lekavar.lma.drinkbeer.registries.SoundEventRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -64,7 +64,7 @@ public class CallBellBlock extends Block {
             } else if (state.getBlock() == BlockRegistry.GOLDEN_CALL_BELL.get()) {
                 world.addParticle(ParticleTypes.NOTE, x, y, z, 0.0D, 0.0D, 0.0D);
             } else if (state.getBlock() == BlockRegistry.LEKAS_CALL_BELL.get()) {
-                world.addParticle((SimpleParticleType)ParticleRegistry.CALL_BELL_TINKLE_PAW.get(), x, y, z, 0.0D, 0.0D, 0.0D);
+                world.addParticle((SimpleParticleType) ParticleTypeRegistry.CALL_BELL_TINKLE_PAW.get(), x, y, z, 0.0D, 0.0D, 0.0D);
             }
         }
         return InteractionResult.sidedSuccess(world.isClientSide);

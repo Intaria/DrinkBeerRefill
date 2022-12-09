@@ -1,20 +1,14 @@
 package lekavar.lma.drinkbeer.gui;
 
 import lekavar.lma.drinkbeer.blockentities.BartendingTableBlockEntity;
-import lekavar.lma.drinkbeer.blockentities.BeerBarrelBlockEntity;
-import lekavar.lma.drinkbeer.items.MixedBeerBlockItem;
 import lekavar.lma.drinkbeer.items.SpiceBlockItem;
 import lekavar.lma.drinkbeer.managers.MixedBeerManager;
-import lekavar.lma.drinkbeer.registries.ContainerTypeRegistry;
-import lekavar.lma.drinkbeer.registries.ItemRegistry;
+import lekavar.lma.drinkbeer.registries.MenuTypeRegistry;
 import lekavar.lma.drinkbeer.registries.SoundEventRegistry;
 import lekavar.lma.drinkbeer.utils.ModCreativeTab;
-import lekavar.lma.drinkbeer.utils.beer.Beers;
-import lekavar.lma.drinkbeer.utils.mixedbeer.Spices;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
@@ -23,24 +17,20 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class BartendingTableContainer  extends AbstractContainerMenu {
+public class BartendingTableMenu extends AbstractContainerMenu {
     private final Container bartendingSpace;
     private final ContainerData syncData;
 
     private static final int INPUT_SPICE_SLOTS = MixedBeerManager.MAX_SPICES_COUNT;
 
 
-    public BartendingTableContainer(int id, Container bartendingSpace, ContainerData syncData, Inventory playerInventory, BartendingTableBlockEntity bartendingTableBlockEntity) {
-        super(ContainerTypeRegistry.bartendingTableContainer.get(), id);
+    public BartendingTableMenu(int id, Container bartendingSpace, ContainerData syncData, Inventory playerInventory, BartendingTableBlockEntity bartendingTableBlockEntity) {
+        super(MenuTypeRegistry.bartendingTableContainer.get(), id);
         this.bartendingSpace = bartendingSpace;
         this.syncData = syncData;
 
@@ -61,11 +51,11 @@ public class BartendingTableContainer  extends AbstractContainerMenu {
         addDataSlots(syncData);
     }
 
-    public BartendingTableContainer(int id, Inventory playerInventory, FriendlyByteBuf data) {
+    public BartendingTableMenu(int id, Inventory playerInventory, FriendlyByteBuf data) {
         this(id, playerInventory, data.readBlockPos());
     }
 
-    public BartendingTableContainer(int id, Inventory playerInventory, BlockPos pos) {
+    public BartendingTableMenu(int id, Inventory playerInventory, BlockPos pos) {
         this(id, ((BartendingTableBlockEntity) Minecraft.getInstance().level.getBlockEntity(pos)), ((BartendingTableBlockEntity) Minecraft.getInstance().level.getBlockEntity(pos)).syncData, playerInventory, ((BartendingTableBlockEntity) Minecraft.getInstance().level.getBlockEntity(pos)));
     }
 

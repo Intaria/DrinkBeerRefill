@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "priority": 1100,
+  "package": "lekavar.lma.drinkbeer.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "refmap": "drinkbeer.refmap.json",
+  "mixins": [],
+  "client": [],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "minVersion": "0.8"
+}

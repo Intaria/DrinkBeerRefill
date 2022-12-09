@@ -1,6 +1,6 @@
 package lekavar.lma.drinkbeer.blockentities;
 
-import lekavar.lma.drinkbeer.gui.TradeBoxContainer;
+import lekavar.lma.drinkbeer.gui.TradeBoxMenu;
 import lekavar.lma.drinkbeer.managers.TradeBoxManager;
 import lekavar.lma.drinkbeer.registries.BlockEntityRegistry;
 import lekavar.lma.drinkbeer.utils.tradebox.Locations;
@@ -9,7 +9,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -29,7 +29,7 @@ public class TradeBoxBlockEntity extends BaseContainerBlockEntity {
     private int locationId;
     private int residentId;
     private int process;
-    public TradeBoxContainer screenHandler;
+    public TradeBoxMenu screenHandler;
 
     public static final int PROCESS_COOLING = 0;
     public static final int PROCESS_TRADING = 1;
@@ -100,18 +100,18 @@ public class TradeBoxBlockEntity extends BaseContainerBlockEntity {
 
     @Override
     public Component getDisplayName() {
-        return new TranslatableComponent("block.drinkbeer.trade_box_normal");
+        return Component.translatable("block.drinkbeer.trade_box_normal");
     }
 
     @Override
     protected Component getDefaultName() {
-        return new TranslatableComponent("block.drinkbeer.trade_box_normal");
+        return Component.translatable("block.drinkbeer.trade_box_normal");
     }
 
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int id, Inventory inventory, Player player) {
-        this.screenHandler = new TradeBoxContainer(id, this, syncData, inventory, this);
+        this.screenHandler = new TradeBoxMenu(id, this, syncData, inventory, this);
         return this.screenHandler;
     }
 

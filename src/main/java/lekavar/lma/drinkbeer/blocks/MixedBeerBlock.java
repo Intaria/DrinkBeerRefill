@@ -7,6 +7,7 @@ import lekavar.lma.drinkbeer.utils.beer.Beers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -100,7 +101,7 @@ public class MixedBeerBlock extends BaseEntityBlock {
     }
 
     @Override
-    public void animateTick(BlockState state, Level world, BlockPos pos, Random random) {
+    public void animateTick(BlockState state, Level world, BlockPos pos, RandomSource random) {
         if(world.isClientSide()) {
             super.animateTick(state, world, pos, random);
             if (random.nextInt(5) == 0) {

@@ -1,6 +1,6 @@
 package lekavar.lma.drinkbeer.gui;
 
-import lekavar.lma.drinkbeer.registries.ContainerTypeRegistry;
+import lekavar.lma.drinkbeer.registries.MenuTypeRegistry;
 import lekavar.lma.drinkbeer.registries.ItemRegistry;
 import lekavar.lma.drinkbeer.registries.SoundEventRegistry;
 import lekavar.lma.drinkbeer.blockentities.BeerBarrelBlockEntity;
@@ -21,14 +21,14 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
-public class BeerBarrelContainer extends AbstractContainerMenu {
+public class BeerBarrelMenu extends AbstractContainerMenu {
     private static final int STATUS_CODE = 1;
     private static final int BREWING_REMAINING_TIME = 0;
     private final Container brewingSpace;
     private final ContainerData syncData;
 
-    public BeerBarrelContainer(int id, Container brewingSpace, ContainerData syncData, Inventory playerInventory, BeerBarrelBlockEntity beerBarrelBlockEntity) {
-        super(ContainerTypeRegistry.beerBarrelContainer.get(), id);
+    public BeerBarrelMenu(int id, Container brewingSpace, ContainerData syncData, Inventory playerInventory, BeerBarrelBlockEntity beerBarrelBlockEntity) {
+        super(MenuTypeRegistry.beerBarrelContainer.get(), id);
         this.brewingSpace = brewingSpace;
         this.syncData = syncData;
 
@@ -49,11 +49,11 @@ public class BeerBarrelContainer extends AbstractContainerMenu {
         addDataSlots(syncData);
     }
 
-    public BeerBarrelContainer(int id, Inventory playerInventory, FriendlyByteBuf data) {
+    public BeerBarrelMenu(int id, Inventory playerInventory, FriendlyByteBuf data) {
         this(id, playerInventory, data.readBlockPos());
     }
 
-    public BeerBarrelContainer(int id, Inventory playerInventory, BlockPos pos) {
+    public BeerBarrelMenu(int id, Inventory playerInventory, BlockPos pos) {
         this(id, ((BeerBarrelBlockEntity) Minecraft.getInstance().level.getBlockEntity(pos)), ((BeerBarrelBlockEntity) Minecraft.getInstance().level.getBlockEntity(pos)).syncData, playerInventory, ((BeerBarrelBlockEntity) Minecraft.getInstance().level.getBlockEntity(pos)));
     }
 

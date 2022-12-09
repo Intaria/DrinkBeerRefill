@@ -108,5 +108,14 @@
   "drinkbeer.flavor.luscious.tooltip" : "生命值回复+4",
   "drinkbeer.flavor.nutty1.tooltip" : "饥饿值回复+5",
   "drinkbeer.flavor.mellow.tooltip" : "抗性提升 1:20",
-  "drinkbeer.flavor.drying.tooltip" : "吸收你面前的水"
+  "drinkbeer.flavor.drying.tooltip" : "吸收你面前的水",
+
+  "drinkbeer.jei.title.brewing": "酿造",
+  "drinkbeer.jei.tooltip.brewing": "酿造时间：",
+  "drinkbeer.jei.tooltip.cup_slot": "酒杯槽",
+  "drinkbeer.jei.tooltip.cup_1": "你需要将 ",
+  "drinkbeer.jei.tooltip.cup_2": " 放在酒杯槽来开始酿造。",
+
+  "config.jade.plugin_drinkbeer.beer_barrel": "啤酒桶Jade设置",
+  "config.jade.plugin_drinkbeer.trade_box": "贸易箱Jade设置"
 }

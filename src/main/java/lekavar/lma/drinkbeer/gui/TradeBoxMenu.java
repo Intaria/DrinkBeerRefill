@@ -3,7 +3,7 @@ package lekavar.lma.drinkbeer.gui;
 import lekavar.lma.drinkbeer.blockentities.TradeBoxBlockEntity;
 import lekavar.lma.drinkbeer.managers.TradeBoxManager;
 import lekavar.lma.drinkbeer.registries.BlockRegistry;
-import lekavar.lma.drinkbeer.registries.ContainerTypeRegistry;
+import lekavar.lma.drinkbeer.registries.MenuTypeRegistry;
 import lekavar.lma.drinkbeer.registries.SoundEventRegistry;
 import lekavar.lma.drinkbeer.utils.tradebox.Good;
 import lekavar.lma.drinkbeer.utils.tradebox.Locations;
@@ -34,7 +34,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
-public class TradeBoxContainer extends AbstractContainerMenu {
+public class TradeBoxMenu extends AbstractContainerMenu {
     private final Container tradeboxInventory;
     private final List<Slot> tradeboxSlots;
 
@@ -51,16 +51,16 @@ public class TradeBoxContainer extends AbstractContainerMenu {
 
     private BlockPos pos;
 
-    public TradeBoxContainer(int id, Inventory playerInventory, FriendlyByteBuf data) {
+    public TradeBoxMenu(int id, Inventory playerInventory, FriendlyByteBuf data) {
         this(id, playerInventory, data.readBlockPos());
     }
 
-    public TradeBoxContainer(int id, Inventory playerInventory, BlockPos pos) {
+    public TradeBoxMenu(int id, Inventory playerInventory, BlockPos pos) {
         this(id, ((TradeBoxBlockEntity) Minecraft.getInstance().level.getBlockEntity(pos)), ((TradeBoxBlockEntity) Minecraft.getInstance().level.getBlockEntity(pos)).syncData, playerInventory, ((TradeBoxBlockEntity) Minecraft.getInstance().level.getBlockEntity(pos)));
     }
 
-    public TradeBoxContainer(int id, Container goodInventory, ContainerData syncData, Inventory playerInventory, TradeBoxBlockEntity tradeBoxBlockEntity) {
-        super(ContainerTypeRegistry.tradeBoxContainer.get(), id);
+    public TradeBoxMenu(int id, Container goodInventory, ContainerData syncData, Inventory playerInventory, TradeBoxBlockEntity tradeBoxBlockEntity) {
+        super(MenuTypeRegistry.tradeBoxContainer.get(), id);
         this.syncData = syncData;
         this.pos = tradeBoxBlockEntity.getBlockPos();
         //Tracking Data
@@ -77,8 +77,8 @@ public class TradeBoxContainer extends AbstractContainerMenu {
         this.tradeboxInventory = new SimpleContainer(4) {
             public void setChanged() {
                 super.setChanged();
-                TradeBoxContainer.this.slotsChanged(this);
-                TradeBoxContainer.this.inventoryChangeListener.run();
+                TradeBoxMenu.this.slotsChanged(this);
+                TradeBoxMenu.this.inventoryChangeListener.run();
             }
         };
         // check size
@@ -381,12 +381,12 @@ public class TradeBoxContainer extends AbstractContainerMenu {
 
     static class OutputSlot extends Slot {
         private final ContainerData syncData;
-        private final TradeBoxContainer tradeBoxContainer;
+        private final TradeBoxMenu tradeBoxMenu;
 
-        public OutputSlot(Container p_i1824_1_, int p_i1824_2_, int p_i1824_3_, int p_i1824_4_, ContainerData syncData, TradeBoxContainer tradeBoxContainer) {
+        public OutputSlot(Container p_i1824_1_, int p_i1824_2_, int p_i1824_3_, int p_i1824_4_, ContainerData syncData, TradeBoxMenu tradeBoxMenu) {
             super(p_i1824_1_, p_i1824_2_, p_i1824_3_, p_i1824_4_);
             this.syncData = syncData;
-            this.tradeBoxContainer = tradeBoxContainer;
+            this.tradeBoxMenu = tradeBoxMenu;
         }
 
         public boolean mayPlace(ItemStack stack) {
@@ -398,7 +398,7 @@ public class TradeBoxContainer extends AbstractContainerMenu {
         }
 
         public boolean isActive() {
-            return !tradeBoxContainer.isCooling();
+            return !tradeBoxMenu.isCooling();
         }
     }
 }

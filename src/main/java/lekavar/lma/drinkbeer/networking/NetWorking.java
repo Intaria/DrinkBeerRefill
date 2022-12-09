@@ -1,7 +1,7 @@
 package lekavar.lma.drinkbeer.networking;
 
 import lekavar.lma.drinkbeer.blockentities.TradeBoxBlockEntity;
-import lekavar.lma.drinkbeer.gui.TradeBoxContainer;
+import lekavar.lma.drinkbeer.gui.TradeBoxMenu;
 import lekavar.lma.drinkbeer.networking.messages.RefreshTradeBoxMessage;
 import lekavar.lma.drinkbeer.registries.NetworkingRegistry;
 import lekavar.lma.drinkbeer.utils.ChannelHelper;
@@ -14,7 +14,6 @@ import net.minecraftforge.network.NetworkEvent;
 import java.util.function.Supplier;
 
 public class NetWorking {
-    // public static final ResourceLocation SEND_REFRESH_TRADEBOX = new ResourceLocation(DrinkBeer.MOD_ID, "snd_reftb");
 
     public static void init(FMLCommonSetupEvent event) {
         ChannelHelper.RegisterMessage(
@@ -27,7 +26,7 @@ public class NetWorking {
                         return;
                     }
                     AbstractContainerMenu screenContainer = player.containerMenu;
-                    if (screenContainer instanceof TradeBoxContainer) {
+                    if (screenContainer instanceof TradeBoxMenu) {
                         BlockPos pos = msg.getPos();
                         context.enqueueWork(() -> {
                             TradeBoxBlockEntity tradeboxEntity = (TradeBoxBlockEntity) player.level.getBlockEntity(pos);

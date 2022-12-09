@@ -1,23 +1,27 @@
 package lekavar.lma.drinkbeer.compat.jade.provider;
 
+import lekavar.lma.drinkbeer.DrinkBeer;
 import lekavar.lma.drinkbeer.blockentities.MixedBeerBlockEntity;
 import lekavar.lma.drinkbeer.blocks.MixedBeerBlock;
 import lekavar.lma.drinkbeer.items.MixedBeerBlockItem;
 import lekavar.lma.drinkbeer.registries.ItemRegistry;
 import lekavar.lma.drinkbeer.utils.beer.Beers;
-import mcp.mobius.waila.addons.core.CorePlugin;
-import mcp.mobius.waila.api.BlockAccessor;
-import mcp.mobius.waila.api.IComponentProvider;
-import mcp.mobius.waila.api.ITooltip;
-import mcp.mobius.waila.api.config.IPluginConfig;
-import mcp.mobius.waila.api.config.WailaConfig;
-import mcp.mobius.waila.api.ui.IElement;
-import mcp.mobius.waila.impl.ui.ItemStackElement;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
+import snownee.jade.api.BlockAccessor;
+import snownee.jade.api.IBlockComponentProvider;
+import snownee.jade.api.ITooltip;
+import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.config.IWailaConfig;
+import snownee.jade.api.ui.IElement;
+import snownee.jade.impl.ui.ItemStackElement;
 
-public class MixedBeerHeadComponentProvider implements IComponentProvider {
+import java.awt.*;
+
+public class MixedBeerHeadComponentProvider implements IBlockComponentProvider {
     public static MixedBeerHeadComponentProvider INSTANCE = new MixedBeerHeadComponentProvider();
 
     @Override
@@ -26,7 +30,7 @@ public class MixedBeerHeadComponentProvider implements IComponentProvider {
         {
             return ItemStackElement.of(Beers.byId(mixedBeer.getBeerId()).getBeerItem().getDefaultInstance());
         }
-        return IComponentProvider.super.getIcon(accessor, config, currentIcon);
+        return IBlockComponentProvider.super.getIcon(accessor, config, currentIcon);
     }
 
     @Override
@@ -34,13 +38,18 @@ public class MixedBeerHeadComponentProvider implements IComponentProvider {
         if(!(accessor.getBlock() instanceof MixedBeerBlock &&
                 accessor.getBlockEntity() instanceof MixedBeerBlockEntity mixedBeer))
             return;
-
         MixedBeerBlockItem MIXED_BEER = (MixedBeerBlockItem) ItemRegistry.MIXED_BEER.get();
         Component name = MIXED_BEER.getMixedBeerName(mixedBeer.getPickStack());
         if (name != null) {
-            WailaConfig wailaConfig = config.getWailaConfig();
+            @SuppressWarnings("all")
+            IWailaConfig wailaConfig = config.getWailaConfig();
             tooltip.clear();
-            tooltip.add((new TextComponent(String.format(wailaConfig.getFormatting().getBlockName(), name.getString()))).withStyle(wailaConfig.getOverlay().getColor().getTitle()), CorePlugin.TAG_OBJECT_NAME);
+            tooltip.add(Component.literal(name.toString()).withStyle(Style.EMPTY.withColor(TextColor.parseColor(wailaConfig.getOverlay().getTheme().backgroundColor))));
         }
+    }
+
+    @Override
+    public ResourceLocation getUid() {
+        return new ResourceLocation(DrinkBeer.MOD_ID,"mixed_beer_head");
     }
 }
