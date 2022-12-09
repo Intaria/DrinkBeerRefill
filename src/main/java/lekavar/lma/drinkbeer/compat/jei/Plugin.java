@@ -2,7 +2,7 @@ package lekavar.lma.drinkbeer.compat.jei;
 
 import lekavar.lma.drinkbeer.DrinkBeer;
 import lekavar.lma.drinkbeer.gui.BeerBarrelMenu;
-import lekavar.lma.drinkbeer.gui.BeerBarrelContainerScreen;
+import lekavar.lma.drinkbeer.gui.BeerBarrelScreen;
 import lekavar.lma.drinkbeer.registries.BlockRegistry;
 import lekavar.lma.drinkbeer.registries.RecipeRegistry;
 import mezz.jei.api.IModPlugin;
@@ -41,6 +41,6 @@ public class Plugin implements IModPlugin {
 
     @Override
     public void registerGuiHandlers(IGuiHandlerRegistration registration) {
-        registration.addRecipeClickArea(BeerBarrelContainerScreen.class, 90, 31, 37, 22, JEIBrewingRecipe.TYPE);
+        registration.addRecipeClickArea(BeerBarrelScreen.class, 90, 31, 37, 22, JEIBrewingRecipe.TYPE);
     }
 }

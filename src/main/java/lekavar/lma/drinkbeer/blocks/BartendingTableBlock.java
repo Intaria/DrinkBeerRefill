@@ -2,6 +2,9 @@ package lekavar.lma.drinkbeer.blocks;
 
 import lekavar.lma.drinkbeer.blockentities.BartendingTableBlockEntity;
 import lekavar.lma.drinkbeer.blockentities.BeerBarrelBlockEntity;
+import lekavar.lma.drinkbeer.items.BeerMugItem;
+import lekavar.lma.drinkbeer.items.MixedBeerBlockItem;
+import lekavar.lma.drinkbeer.items.SpiceBlockItem;
 import lekavar.lma.drinkbeer.registries.ItemRegistry;
 import lekavar.lma.drinkbeer.registries.SoundEventRegistry;
 import lekavar.lma.drinkbeer.utils.ModCreativeTab;
@@ -45,7 +48,7 @@ public class BartendingTableBlock extends BaseEntityBlock {
     public static final BooleanProperty OPENED = BooleanProperty.create("opened");
     public static final IntegerProperty TYPE = IntegerProperty.create("type", 1, 2);
 
-    public final static VoxelShape SHAPE =  Block.box(0, 0.01, 0, 16, 16, 16);
+    public final static VoxelShape SHAPE = Block.box(0, 0.01, 0, 16, 16, 16);
 
     public BartendingTableBlock() {
         super(BlockBehaviour.Properties.of(Material.WOOD).strength(2.0f).noOcclusion());
@@ -75,39 +78,37 @@ public class BartendingTableBlock extends BaseEntityBlock {
     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!world.isClientSide) {
             ItemStack itemStack = player.getItemInHand(hand);
-            if (itemStack.getItem().asItem().getCreativeTabs().contains(ModCreativeTab.BEER)) {
-                world.playSound(null, pos, SoundEvents.WOOD_PLACE, SoundSource.BLOCKS, 1f, 1f);
-                BlockEntity blockentity = world.getBlockEntity(pos);
-                if (blockentity instanceof BartendingTableBlockEntity) {
-                    ((BartendingTableBlockEntity) blockentity).setBeer(itemStack);
-                    itemStack.shrink(1);
-                    NetworkHooks.openScreen((ServerPlayer) player, (BartendingTableBlockEntity) blockentity, (FriendlyByteBuf packerBuffer) -> {
-                        packerBuffer.writeBlockPos(blockentity.getBlockPos());
-                    });
+            BlockEntity blockentity = world.getBlockEntity(pos);
+            if (blockentity instanceof BartendingTableBlockEntity bartendingTableBlockEntity) {
+                if (itemStack.isEmpty()){
+                    if(player.isShiftKeyDown()){
+                        boolean currentOpenedState = state.getValue(OPENED);
+                        world.playSound(null, pos, currentOpenedState ? SoundEventRegistry.BARTENDING_TABLE_CLOSE.get() : SoundEventRegistry.BARTENDING_TABLE_OPEN.get(), SoundSource.BLOCKS, 1f, 1f);
+                        world.setBlockAndUpdate(pos, state.setValue(OPENED, !currentOpenedState));
+                        return InteractionResult.CONSUME;
+                    } else {
+                        var tryTake = bartendingTableBlockEntity.takeBeer(false);
+                        if(!tryTake.isEmpty()) player.setItemInHand(hand,tryTake);
+                    }
+                } else{
+                    if (itemStack.getItem() instanceof MixedBeerBlockItem || itemStack.getItem() instanceof BeerMugItem) {
+                        var result = bartendingTableBlockEntity.placeBeer(itemStack);
+                        if(result){
+                            world.playSound(null, pos, SoundEvents.WOOD_PLACE, SoundSource.BLOCKS, 1f, 1f);
+                            if(!player.getAbilities().instabuild) itemStack.shrink(1);
+                        }
+                        return InteractionResult.CONSUME;
+                    } else if (itemStack.getItem() instanceof SpiceBlockItem){
+                        var result = bartendingTableBlockEntity.putSpice(itemStack);
+                        if(result){
+                            world.playSound(null, pos, SoundEvents.WOOD_PLACE, SoundSource.BLOCKS, 1f, 1f);
+                            if(!player.getAbilities().instabuild) itemStack.shrink(1);
+                        }
+                    } return InteractionResult.CONSUME;
                 }
-                return InteractionResult.CONSUME;
-            } else {
-                boolean currentOpenedState = state.getValue(OPENED);
-                world.playSound(null, pos, currentOpenedState ? SoundEventRegistry.BARTENDING_TABLE_CLOSE.get() : SoundEventRegistry.BARTENDING_TABLE_OPEN.get(), SoundSource.BLOCKS, 1f, 1f);
-                world.setBlockAndUpdate(pos, state.setValue(OPENED, !currentOpenedState));
-                return InteractionResult.CONSUME;
             }
         }
         return InteractionResult.sidedSuccess(world.isClientSide);
-    }
-
-    @Nullable
-    @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntity) {
-        if (level != null && level.isClientSide()) {
-            return null;
-        } else {
-            return (theLevel, pos, state, tile) -> {
-                if (tile instanceof BartendingTableBlockEntity bartendingTableBlockEntity) {
-                    bartendingTableBlockEntity.tickServer();
-                }
-            };
-        }
     }
 
     @Nullable

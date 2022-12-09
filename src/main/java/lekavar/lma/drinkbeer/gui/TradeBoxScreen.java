@@ -24,14 +24,14 @@ import net.minecraft.world.phys.HitResult;
 import java.awt.*;
 
 
-public class TradeBoxContainerScreen extends AbstractContainerScreen<TradeBoxMenu> {
+public class TradeBoxScreen extends AbstractContainerScreen<TradeBoxMenu> {
     private static final ResourceLocation TRADE_BOX_GUI = new ResourceLocation(DrinkBeer.MOD_ID, "textures/gui/container/trade_box.png");
     private final int textureWidth = 176;
     private final int textureHeight = 166;
     private Inventory inventory;
     TradeBoxMenu container;
 
-    public TradeBoxContainerScreen(TradeBoxMenu screenContainer, Inventory inv, Component title) {
+    public TradeBoxScreen(TradeBoxMenu screenContainer, Inventory inv, Component title) {
         super(screenContainer, inv, title);
         this.imageWidth = textureWidth;
         this.imageHeight = textureHeight;

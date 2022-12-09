@@ -5,7 +5,8 @@ import lekavar.lma.drinkbeer.blockentities.BartendingTableBlockEntity;
 import lekavar.lma.drinkbeer.blockentities.BeerBarrelBlockEntity;
 import lekavar.lma.drinkbeer.blockentities.MixedBeerBlockEntity;
 import lekavar.lma.drinkbeer.blockentities.TradeBoxBlockEntity;
-import lekavar.lma.drinkbeer.client.renderers.MixedBeerEntityRenderer;
+import lekavar.lma.drinkbeer.client.renderers.BartendingTableBlockEntityRenderer;
+import lekavar.lma.drinkbeer.client.renderers.MixedBeerBlockEntityRenderer;
 import lekavar.lma.drinkbeer.managers.MixedBeerManager;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.item.ItemProperties;
@@ -25,7 +26,8 @@ public class BlockEntityRegistry {
 
     public static void registerRenderer(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
-            BlockEntityRenderers.register(BlockEntityRegistry.MIXED_BEER_TILEENTITY.get(), MixedBeerEntityRenderer::new);
+            BlockEntityRenderers.register(BlockEntityRegistry.MIXED_BEER_TILEENTITY.get(), MixedBeerBlockEntityRenderer::new);
+            BlockEntityRenderers.register(BlockEntityRegistry.BARTENDING_TABLE_TILEENTITY.get(), BartendingTableBlockEntityRenderer::new);
             ItemProperties.register(ItemRegistry.MIXED_BEER.get(), new ResourceLocation("beer_id"), (stack, level, living, id)
                     -> MixedBeerManager.getBeerId(stack) / 100.0f);
         });

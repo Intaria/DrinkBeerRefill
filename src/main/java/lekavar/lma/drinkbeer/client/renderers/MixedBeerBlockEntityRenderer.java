@@ -15,8 +15,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-public class MixedBeerEntityRenderer implements BlockEntityRenderer<MixedBeerBlockEntity> {
-    public MixedBeerEntityRenderer(BlockEntityRendererProvider.Context context) {
+public class MixedBeerBlockEntityRenderer implements BlockEntityRenderer<MixedBeerBlockEntity> {
+    public MixedBeerBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
 
     }
 

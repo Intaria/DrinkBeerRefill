@@ -10,14 +10,14 @@ import net.minecraft.world.entity.player.Inventory;
 
 import java.awt.*;
 
-public class BeerBarrelContainerScreen extends AbstractContainerScreen<BeerBarrelMenu> {
+public class BeerBarrelScreen extends AbstractContainerScreen<BeerBarrelMenu> {
 
     private final ResourceLocation BEER_BARREL_CONTAINER_RESOURCE = new ResourceLocation(DrinkBeer.MOD_ID, "textures/gui/container/beer_barrel.png");
     private final int textureWidth = 176;
     private final int textureHeight = 166;
     private Inventory inventory;
 
-    public BeerBarrelContainerScreen(BeerBarrelMenu screenContainer, Inventory inv, Component title) {
+    public BeerBarrelScreen(BeerBarrelMenu screenContainer, Inventory inv, Component title) {
         super(screenContainer, inv, title);
         this.imageWidth = textureWidth;
         this.imageHeight = textureHeight;

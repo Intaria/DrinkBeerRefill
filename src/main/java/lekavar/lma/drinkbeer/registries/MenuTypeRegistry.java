@@ -18,15 +18,13 @@ import net.minecraftforge.registries.ForgeRegistries;
 public class MenuTypeRegistry {
     public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(ForgeRegistries.MENU_TYPES, DrinkBeer.MOD_ID);
     public static final RegistryObject<MenuType<BeerBarrelMenu>> beerBarrelContainer = MENUS.register("beer_barrel_container", () -> IForgeMenuType.create(BeerBarrelMenu::new));
-    public static final RegistryObject<MenuType<BartendingTableMenu>> bartendingTableContainer = MENUS.register("bartending_table_normal_container", () -> IForgeMenuType.create(BartendingTableMenu::new));
     public static final RegistryObject<MenuType<TradeBoxMenu>> tradeBoxContainer = MENUS.register("trade_box_normal_container", () -> IForgeMenuType.create(TradeBoxMenu::new));
 
     @SubscribeEvent
     public static void registerContainerScreen(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
-            MenuScreens.register(MenuTypeRegistry.beerBarrelContainer.get(), BeerBarrelContainerScreen::new);
-            MenuScreens.register(MenuTypeRegistry.bartendingTableContainer.get(), BartendingTableContainerScreen::new);
-            MenuScreens.register(MenuTypeRegistry.tradeBoxContainer.get(), TradeBoxContainerScreen::new);
+            MenuScreens.register(MenuTypeRegistry.beerBarrelContainer.get(), BeerBarrelScreen::new);
+            MenuScreens.register(MenuTypeRegistry.tradeBoxContainer.get(), TradeBoxScreen::new);
         });
     }
 }
