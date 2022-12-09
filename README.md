@@ -7,10 +7,11 @@ providing full fabric-3.0.2 version features in 1.19.2+ forge version and built-
 
 ## Why next?
 Reason is simple: 
-* New ways to interact
+* New ways to interact (e.g. Place Beer in Bartending Table and see it)
+* (Partial Implement) Full automation support by implementing Capability (e.g. Hopper supports Bartending Table)
 * (WIP) New Beers & New Flavor
 * (WIP) Extendable Api
-* Extension and Compat With Other Mods
+* Extension and Compat With Other Mods (e.g. Keg support Alcocraft Recipe) `This is now suspended since alcocraft 1.19.2 crash problem, See issue Alcocraft#10`
 
 ## Credit
 Thank following person for their amazing ground works!
