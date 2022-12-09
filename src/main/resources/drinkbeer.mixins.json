@@ -4,7 +4,9 @@
   "package": "lekavar.lma.drinkbeer.mixin",
   "compatibilityLevel": "JAVA_16",
   "refmap": "drinkbeer.refmap.json",
-  "mixins": [],
+  "mixins": [
+    "RecipeManagerAccessor"
+  ],
   "client": [],
   "injectors": {
     "defaultRequire": 1

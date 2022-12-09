@@ -69,16 +69,6 @@ minecraft {
     }
 }
 
-// include JEI plugin from src level
-sourceSets.main {
-    java {
-        srcDirs 'JustEnoughKeg/src/main/java'
-    }
-    resources {
-        srcDirs 'JustEnoughKeg/src/main/resources'
-    }
-}
-
 processResources {
     duplicatesStrategy = "exclude" // avoid duplicated meta configs like mods.toml
 }
@@ -114,6 +104,9 @@ dependencies {
 
     // Jade
     implementation fg.deobf("curse.maven:jade-${jade_project_id}:${jade_file_id}")
+
+    // Alcocraft has crashing issue. See issue https://github.com/hadrus/Alcocraft/issues/10.
+    //implementation fg.deobf("curse.maven:alcocraft-${alcocraft_project_id}:${alcocraft_file_id}")
 
     compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
     compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")

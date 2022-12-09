@@ -62,6 +62,6 @@ public class MixedBeerComponentProvider implements IBlockComponentProvider {
 
     @Override
     public ResourceLocation getUid() {
-        return new ResourceLocation(DrinkBeer.MOD_ID,"mixinedBeer");
+        return new ResourceLocation(DrinkBeer.MOD_ID,"mixed_beer");
     }
 }
