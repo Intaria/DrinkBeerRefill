@@ -15,7 +15,7 @@ Reasons are simple:
 
 ## Credit
 Thank following people for their amazing ground works!
-* [Levakar](https://github.com/Lekavar) and [MarbleGateKeeper](https://github.com/MarbleGateKeeper) made 1.17.1 and previous official versions.
+* [Lekavar](https://github.com/Lekavar) and [MarbleGateKeeper](https://github.com/MarbleGateKeeper) made 1.17.1 and previous official versions.
 * [Naetheline](https://github.com/Naetheline) made 1.18.1 version and ported `bartending` & `bartering` features.
 * [yanang007](https://github.com/yanang007) made 1.18.2 version.
 * [MarbleGateKeeper](https://github.com/MarbleGateKeeper) made JEI plugin.
