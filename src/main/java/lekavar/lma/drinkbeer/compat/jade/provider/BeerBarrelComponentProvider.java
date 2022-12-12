@@ -36,7 +36,7 @@ public class BeerBarrelComponentProvider implements IBlockComponentProvider, ISe
             return;
 
         // item at INPUT_SIZE is beer mug, and INPUT_SIZE + 1 is the product
-        ItemStack output = barrel.getItem(BrewingRecipe.INPUT_SIZE + 1);
+        ItemStack output = barrel.getBrewingInventory().getItem(5).copy();
         int timeRemaining = accessor.getServerData().getInt(KEY_TIME_REMAINING);
 
         if (!output.isEmpty()) {

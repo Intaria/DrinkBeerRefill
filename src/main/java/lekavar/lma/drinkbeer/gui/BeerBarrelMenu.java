@@ -41,7 +41,7 @@ public class BeerBarrelMenu extends AbstractContainerMenu {
         addSlot(new Slot(brewingSpace, 2, 28, 44));
         addSlot(new Slot(brewingSpace, 3, 46, 44));
         // Empty Cup
-        addSlot(new CupSlot(brewingSpace, 4, 73, 50));
+        addSlot(new Slot(brewingSpace, 4, 73, 50));
         // Output
         addSlot(new OutputSlot(brewingSpace, 5, 128, 34, syncData, beerBarrelBlockEntity));
 
@@ -151,12 +151,6 @@ public class BeerBarrelMenu extends AbstractContainerMenu {
             player.level.playSound(player, player.blockPosition(), SoundEvents.BARREL_CLOSE, SoundSource.BLOCKS, 1f, 1f);
         }
         super.removed(player);
-    }
-
-    static class CupSlot extends Slot {
-        public CupSlot(Container p_i1824_1_, int p_i1824_2_, int p_i1824_3_, int p_i1824_4_) {
-            super(p_i1824_1_, p_i1824_2_, p_i1824_3_, p_i1824_4_);
-        }
     }
 
     static class OutputSlot extends Slot {

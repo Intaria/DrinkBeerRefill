@@ -20,10 +20,8 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
-import net.minecraft.world.item.BucketItem;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.MilkBucketItem;
+import net.minecraft.world.item.*;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
@@ -78,7 +76,7 @@ public class BeerBarrelBlockEntity extends BlockEntity implements MenuProvider {
         // waiting for ingredient
         if (statusCode == 0) {
             // ingredient slots must have no empty slot
-            if (brewingInventory.getIngredients().size()<4) {
+            if (brewingInventory.getIngredients().size()==4) {
                 // Try match Recipe
                 BrewingRecipe recipe = level.getRecipeManager().getRecipeFor(RecipeRegistry.RECIPE_TYPE_BREWING.get(), brewingInventory, this.level).orElse(null);
                 if (canBrew(recipe)) {
@@ -87,7 +85,6 @@ public class BeerBarrelBlockEntity extends BlockEntity implements MenuProvider {
                     // Check Weather have enough cup.
                     if (hasEnoughEmptyCap(recipe)) {
                         startBrewing(recipe);
-
                     }
                 }
                 // Time remainingBrewTime will be reset since it also represents Standard Brewing Time if valid in this stage
@@ -142,9 +139,6 @@ public class BeerBarrelBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     private void startBrewing(BrewingRecipe recipe) {
-        // Pre-set beer to output Slot
-        // This Step must be done first
-        brewingInventory.setItem(5, recipe.assemble(brewingInventory));
         // Consume Ingredient & Cup;
         for (int i = 0; i < 4; i++) {
             ItemStack ingred = brewingInventory.getItem(i);
@@ -156,8 +150,7 @@ public class BeerBarrelBlockEntity extends BlockEntity implements MenuProvider {
         remainingBrewTime = recipe.getBrewingTime();
         // Change Status Code to 1 (brewing)
         statusCode = 1;
-
-        setChanged();
+        markDirty();
     }
 
     private boolean shouldReturnBucket(ItemStack item) {
@@ -165,19 +158,31 @@ public class BeerBarrelBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     private void clearResult() {
-        brewingInventory.setItem(5, ItemStack.EMPTY);
-        remainingBrewTime = 0;
-        setChanged();
+        if(!brewingInventory.getItem(5).isEmpty()){
+            brewingInventory.setItem(5, ItemStack.EMPTY);
+            remainingBrewTime = 0;
+            markDirty();
+        }
     }
 
     private void setResult(BrewingRecipe recipe) {
-        brewingInventory.setItem(5, recipe.assemble(brewingInventory));
-        remainingBrewTime = recipe.getBrewingTime();
-        setChanged();
+        var result = recipe.assemble(brewingInventory);
+        if(!ItemStack.matches(result,brewingInventory.getItem(5))){
+            brewingInventory.setItem(5, recipe.assemble(brewingInventory));
+            remainingBrewTime = recipe.getBrewingTime();
+            markDirty();
+        }
     }
 
     public BrewingInventory getBrewingInventory() {
         return brewingInventory;
+    }
+
+    public void markDirty() {
+        var pos = getBlockPos();
+        var bs = level.getBlockState(pos);
+        level.sendBlockUpdated(pos,bs,bs, Block.UPDATE_CLIENTS);
+        setChanged();
     }
 
     @Override
@@ -195,7 +200,7 @@ public class BeerBarrelBlockEntity extends BlockEntity implements MenuProvider {
         this.statusCode = tag.getShort("statusCode");
 
         // Compat previous version
-        if(tag.contains("tag"))
+        if(tag.contains("inv"))
             brewingInventory.fromTag((ListTag) tag.get("inv"));
         else {
             var items = NonNullList.withSize(6, ItemStack.EMPTY);
@@ -233,14 +238,12 @@ public class BeerBarrelBlockEntity extends BlockEntity implements MenuProvider {
     public CompoundTag getUpdateTag() {
         CompoundTag tag = super.getUpdateTag();
         tag.put("inv",brewingInventory.createTag());
-        tag.putShort("RemainingBrewTime", (short) this.remainingBrewTime);
         return tag;
     }
 
     @Override
     public void handleUpdateTag(CompoundTag tag) {
         brewingInventory.fromTag((ListTag) tag.get("inv"));
-        this.remainingBrewTime = tag.getShort("RemainingBrewTime");
     }
 
     @Override
@@ -257,7 +260,7 @@ public class BeerBarrelBlockEntity extends BlockEntity implements MenuProvider {
         return super.getCapability(cap, side);
     }
 
-    static class BrewingInventory extends SimpleContainer implements IBrewingInventory {
+    public static class BrewingInventory extends SimpleContainer implements IBrewingInventory {
         BeerBarrelBlockEntity be;
 
         public BrewingInventory(BeerBarrelBlockEntity be) {
@@ -270,7 +273,6 @@ public class BeerBarrelBlockEntity extends BlockEntity implements MenuProvider {
         public List<ItemStack> getIngredients() {
             List<ItemStack> ret = new ArrayList<>();
             if(isEmpty()) return ret;
-            // TODO need check recipe for this change;
             for(int i=0;i<4;i++){
                 if(!getItem(i).isEmpty()) ret.add(getItem(i));
             }
@@ -280,7 +282,7 @@ public class BeerBarrelBlockEntity extends BlockEntity implements MenuProvider {
         @NotNull
         @Override
         public ItemStack getCup() {
-            return getItem(5);
+            return getItem(4);
         }
 
         @Override
@@ -299,7 +301,7 @@ public class BeerBarrelBlockEntity extends BlockEntity implements MenuProvider {
         }
 
 
-            @Override
+        @Override
         public void fromTag(ListTag pContainerNbt) {
             for(int i = 0; i < 6; ++i) {
                 ItemStack itemstack = ItemStack.of(pContainerNbt.getCompound(i));
@@ -339,7 +341,7 @@ public class BeerBarrelBlockEntity extends BlockEntity implements MenuProvider {
 
         @Override
         public @NotNull ItemStack getStackInSlot(int slot) {
-            if(be.statusCode==2) return ItemStack.EMPTY;
+            if(be.statusCode!=2) return ItemStack.EMPTY;
             return brewingInventory.getItem(5);
         }
 
@@ -350,9 +352,13 @@ public class BeerBarrelBlockEntity extends BlockEntity implements MenuProvider {
 
         @Override
         public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
-            if(be.statusCode==2) return ItemStack.EMPTY;
+            if(be.statusCode!=2) return ItemStack.EMPTY;
             var ret = brewingInventory.getItem(5).copy();
-            if(simulate) brewingInventory.setItem(5,ItemStack.EMPTY);
+            amount = Math.min(ret.getCount(),amount);
+            ret.setCount(amount);
+            if(!simulate) {
+                brewingInventory.getItem(5).shrink(amount);
+            }
             return ret;
         }
 

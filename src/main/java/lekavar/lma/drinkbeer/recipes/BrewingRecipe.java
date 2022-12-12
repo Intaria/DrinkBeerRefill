@@ -60,9 +60,10 @@ public class BrewingRecipe implements Recipe<IBrewingInventory> {
     }
 
     @Override
-    public boolean matches(IBrewingInventory p_77569_1_, Level p_77569_2_) {
+    public boolean matches(IBrewingInventory pContainer, Level pLevel) {
         List<Ingredient> testTarget = Lists.newArrayList(input);
-        List<ItemStack> tested = p_77569_1_.getIngredients();
+        List<ItemStack> tested = pContainer.getIngredients();
+        if (tested.size()<4) return false;
         for (ItemStack itemStack : tested) {
             int i = getLatestMatched(testTarget, itemStack);
             if (i == -1) return false;
