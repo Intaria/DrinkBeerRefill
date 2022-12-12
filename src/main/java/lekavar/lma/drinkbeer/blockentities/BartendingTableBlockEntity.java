@@ -10,8 +10,6 @@ import lekavar.lma.drinkbeer.utils.mixedbeer.Spices;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -32,13 +30,10 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
 
 public class BartendingTableBlockEntity extends BlockEntity {
     private final SimpleContainer inv = new OneItemContainer(2);
-    private final LazyOptional<IItemHandler> handler = LazyOptional.of(() -> new BartendingTableInvWrapper(inv,this));
-    private List<Integer> spiceList = new ArrayList<>();
+    private final LazyOptional<IItemHandler> handler = LazyOptional.of(() -> new BartendingTableInvWrapper(this));
 
     public BartendingTableBlockEntity(BlockPos pos, BlockState state) {
         super(BlockEntityRegistry.BARTENDING_TABLE_TILEENTITY.get(),pos,state);
@@ -148,7 +143,7 @@ public class BartendingTableBlockEntity extends BlockEntity {
 
     @NotNull
     @Override
-    public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @org.jetbrains.annotations.Nullable Direction side) {
+    public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
         if(cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
             return handler.cast();
         return super.getCapability(cap, side);
@@ -168,9 +163,9 @@ public class BartendingTableBlockEntity extends BlockEntity {
     static class BartendingTableInvWrapper extends InvWrapper{
         Container inv;
         BartendingTableBlockEntity be;
-        public BartendingTableInvWrapper(Container inv, BartendingTableBlockEntity be) {
-            super(inv);
-            this.inv = inv;
+        public BartendingTableInvWrapper(BartendingTableBlockEntity be) {
+            super(be.inv);
+            this.inv = be.inv;
             this.be = be;
         }
 

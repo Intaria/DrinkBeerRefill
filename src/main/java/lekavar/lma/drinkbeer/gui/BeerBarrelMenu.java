@@ -54,7 +54,7 @@ public class BeerBarrelMenu extends AbstractContainerMenu {
     }
 
     public BeerBarrelMenu(int id, Inventory playerInventory, BlockPos pos) {
-        this(id, ((BeerBarrelBlockEntity) Minecraft.getInstance().level.getBlockEntity(pos)), ((BeerBarrelBlockEntity) Minecraft.getInstance().level.getBlockEntity(pos)).syncData, playerInventory, ((BeerBarrelBlockEntity) Minecraft.getInstance().level.getBlockEntity(pos)));
+        this(id, ((BeerBarrelBlockEntity) Minecraft.getInstance().level.getBlockEntity(pos)).getBrewingInventory(), ((BeerBarrelBlockEntity) Minecraft.getInstance().level.getBlockEntity(pos)).syncData, playerInventory, ((BeerBarrelBlockEntity) Minecraft.getInstance().level.getBlockEntity(pos)));
     }
 
     private int addSlotRange(IItemHandler handler, int index, int x, int y, int amount, int dx) {
@@ -84,30 +84,23 @@ public class BeerBarrelMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public ItemStack quickMoveStack(Player p_82846_1_, int p_82846_2_) {
+    public ItemStack quickMoveStack(Player pPlayer, int pIndex) {
         ItemStack itemstack = ItemStack.EMPTY;
-        Slot slot = this.slots.get(p_82846_2_);
+        Slot slot = this.slots.get(pIndex);
         if (slot != null && slot.hasItem()) {
             ItemStack itemstack1 = slot.getItem();
             itemstack = itemstack1.copy();
 
             // Try quick-pickup output
-            if (p_82846_2_ == 41) {
+            if (pIndex == 41) {
                 if (!this.moveItemStackTo(itemstack1, 0, 36, false)) {
                     return ItemStack.EMPTY;
                 }
             }
 
             // Try quick-move item in player inv.
-            else if (p_82846_2_ < 36) {
-                // Try to fill cup slot first.
-                if (this.isEmptyCup(itemstack1)) {
-                    if (!this.moveItemStackTo(itemstack1, 40, 41, false)) {
-                        return ItemStack.EMPTY;
-                    }
-                }
-                // Try to fill ingredient slot.
-                if (!this.moveItemStackTo(itemstack1, 36, 40, false)) {
+            else if (pIndex < 36) {
+                if (!this.moveItemStackTo(itemstack1, 36, 41, false)) {
                     return ItemStack.EMPTY;
                 }
             }
@@ -128,19 +121,15 @@ public class BeerBarrelMenu extends AbstractContainerMenu {
                 return ItemStack.EMPTY;
             }
 
-            slot.onTake(p_82846_1_, itemstack1);
+            slot.onTake(pPlayer, itemstack1);
         }
 
         return itemstack;
     }
 
-    public boolean isEmptyCup(ItemStack itemStack) {
-        return itemStack.getItem() == ItemRegistry.EMPTY_BEER_MUG.get();
-    }
-
     @Override
-    public boolean stillValid(Player p_75145_1_) {
-        return this.brewingSpace.stillValid(p_75145_1_);
+    public boolean stillValid(Player pPlayer) {
+        return this.brewingSpace.stillValid(pPlayer);
     }
 
     public boolean getIsBrewing() {
@@ -158,13 +147,6 @@ public class BeerBarrelMenu extends AbstractContainerMenu {
     @Override
     public void removed(Player player) {
         if (!player.level.isClientSide()) {
-            // Return Item to Player;
-            for (int i = 0; i < 5; i++) {
-                if (!brewingSpace.getItem(i).isEmpty()) {
-                    ItemHandlerHelper.giveItemToPlayer(player, brewingSpace.removeItem(i, brewingSpace.getItem(i).getCount()));
-                }
-            }
-        } else {
             // Play Closing Barrel Sound
             player.level.playSound(player, player.blockPosition(), SoundEvents.BARREL_CLOSE, SoundSource.BLOCKS, 1f, 1f);
         }
@@ -175,20 +157,14 @@ public class BeerBarrelMenu extends AbstractContainerMenu {
         public CupSlot(Container p_i1824_1_, int p_i1824_2_, int p_i1824_3_, int p_i1824_4_) {
             super(p_i1824_1_, p_i1824_2_, p_i1824_3_, p_i1824_4_);
         }
-
-        // Only Empty Cup is Allowed.
-        @Override
-        public boolean mayPlace(ItemStack p_75214_1_) {
-            return p_75214_1_.getItem() == ItemRegistry.EMPTY_BEER_MUG.get();
-        }
     }
 
     static class OutputSlot extends Slot {
         private final ContainerData syncData;
         private final BeerBarrelBlockEntity beerBarrelBlockEntity;
 
-        public OutputSlot(Container p_i1824_1_, int p_i1824_2_, int p_i1824_3_, int p_i1824_4_, ContainerData syncData, BeerBarrelBlockEntity beerBarrelBlockEntity) {
-            super(p_i1824_1_, p_i1824_2_, p_i1824_3_, p_i1824_4_);
+        public OutputSlot(Container container, int p_i1824_2_, int p_i1824_3_, int p_i1824_4_, ContainerData syncData, BeerBarrelBlockEntity beerBarrelBlockEntity) {
+            super(container, p_i1824_2_, p_i1824_3_, p_i1824_4_);
             this.syncData = syncData;
             this.beerBarrelBlockEntity = beerBarrelBlockEntity;
         }
@@ -196,27 +172,24 @@ public class BeerBarrelMenu extends AbstractContainerMenu {
         // After player picking up product, play pour sound effect
         // statusCode reset is handled by TileEntity#tick
         @Override
-        public void onTake(Player player, ItemStack p_190901_2_) {
-            if (p_190901_2_.getItem() == ItemRegistry.BEER_MUG_FROTHY_PINK_EGGNOG.get()) {
+        public void onTake(Player player, ItemStack pStack) {
+            if (pStack.getItem() == ItemRegistry.BEER_MUG_FROTHY_PINK_EGGNOG.get()) {
                 player.level.playSound((Player) null, beerBarrelBlockEntity.getBlockPos(), SoundEventRegistry.POURING_CHRISTMAS.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
-                //p_190901_1_.level.playSound(p_190901_1_, p_190901_1_.blockPosition(), SoundEventRegistry.POURING_CHRISTMAS_VER.get(), SoundCategory.BLOCKS, 1f, 1f);
 
             } else {
                 player.level.playSound((Player) null, beerBarrelBlockEntity.getBlockPos(), SoundEventRegistry.POURING.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
-                //p_190901_1_.level.playSound(p_190901_1_, p_190901_1_.blockPosition(), SoundEventRegistry.POURING.get(), SoundCategory.BLOCKS, 1f, 1f);
-                //}
             }
         }
 
         // Placing item on output slot is prohibited.
         @Override
-        public boolean mayPlace(ItemStack p_75214_1_) {
+        public boolean mayPlace(ItemStack pStack) {
             return false;
         }
 
         // Only when the statusCode is 2 (waiting for pickup), pickup is allowed.
         @Override
-        public boolean mayPickup(Player p_82869_1_) {
+        public boolean mayPickup(Player pPlayer) {
             return syncData.get(STATUS_CODE) == 2;
         }
     }

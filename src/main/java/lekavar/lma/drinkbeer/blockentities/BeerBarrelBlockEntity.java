@@ -6,12 +6,16 @@ import lekavar.lma.drinkbeer.recipes.IBrewingInventory;
 import lekavar.lma.drinkbeer.registries.BlockEntityRegistry;
 import lekavar.lma.drinkbeer.registries.RecipeRegistry;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.*;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -20,41 +24,43 @@ import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.MilkBucketItem;
-import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 
-public class BeerBarrelBlockEntity extends BaseContainerBlockEntity implements IBrewingInventory {
-    private NonNullList<ItemStack> items = NonNullList.withSize(6, ItemStack.EMPTY);
+public class BeerBarrelBlockEntity extends BlockEntity implements MenuProvider {
+
+    private final BrewingInventory brewingInventory = new BrewingInventory(this);
     // This int will not only indicate remainingBrewTime, but also represent Standard Brewing Time if valid in "waiting for ingredients" stage
+    private final LazyOptional<IItemHandler> handler = LazyOptional.of(() -> new BarrelInvWrapper(this));
     private int remainingBrewTime;
     // 0 - waiting for ingredient, 1 - brewing, 2 - waiting for pickup product
     private int statusCode;
     public final ContainerData syncData = new ContainerData() {
         @Override
         public int get(int index) {
-            switch (index) {
-                case 0:
-                    return remainingBrewTime;
-                case 1:
-                    return statusCode;
-                default:
-                    return 0;
-            }
+            return switch (index) {
+                case 0 -> remainingBrewTime;
+                case 1 -> statusCode;
+                default -> 0;
+            };
         }
 
         @Override
         public void set(int index, int value) {
             switch (index) {
-                case 0:
-                    remainingBrewTime = value;
-                    break;
-                case 1:
-                    statusCode = value;
-                    break;
+                case 0 -> remainingBrewTime = value;
+                case 1 -> statusCode = value;
             }
         }
 
@@ -72,12 +78,12 @@ public class BeerBarrelBlockEntity extends BaseContainerBlockEntity implements I
         // waiting for ingredient
         if (statusCode == 0) {
             // ingredient slots must have no empty slot
-            if (!getIngredients().contains(ItemStack.EMPTY)) {
+            if (brewingInventory.getIngredients().size()<4) {
                 // Try match Recipe
-                BrewingRecipe recipe = level.getRecipeManager().getRecipeFor(RecipeRegistry.RECIPE_TYPE_BREWING.get(), this, this.level).orElse(null);
+                BrewingRecipe recipe = level.getRecipeManager().getRecipeFor(RecipeRegistry.RECIPE_TYPE_BREWING.get(), brewingInventory, this.level).orElse(null);
                 if (canBrew(recipe)) {
                     // Show Standard Brewing Time & Result
-                    showPreview(recipe);
+                    setResult(recipe);
                     // Check Weather have enough cup.
                     if (hasEnoughEmptyCap(recipe)) {
                         startBrewing(recipe);
@@ -86,10 +92,10 @@ public class BeerBarrelBlockEntity extends BaseContainerBlockEntity implements I
                 }
                 // Time remainingBrewTime will be reset since it also represents Standard Brewing Time if valid in this stage
                 else {
-                    clearPreview();
+                    clearResult();
                 }
             } else {
-                clearPreview();
+                clearResult();
             }
         }
         // brewing
@@ -109,7 +115,7 @@ public class BeerBarrelBlockEntity extends BaseContainerBlockEntity implements I
         // waiting for pickup
         else if (statusCode == 2) {
             // Reset Stage to 0 (waiting for ingredients) after pickup Item
-            if (items.get(5).isEmpty()) {
+            if (brewingInventory.getItem(5).isEmpty()) {
                 statusCode = 0;
                 setChanged();
             }
@@ -125,27 +131,27 @@ public class BeerBarrelBlockEntity extends BaseContainerBlockEntity implements I
 
     private boolean canBrew(@Nullable BrewingRecipe recipe) {
         if (recipe != null) {
-            return recipe.matches(this, this.level);
+            return recipe.matches(brewingInventory, this.level);
         } else {
             return false;
         }
     }
 
     private boolean hasEnoughEmptyCap(BrewingRecipe recipe) {
-        return recipe.isCupQualified(this);
+        return recipe.isCupQualified(brewingInventory);
     }
 
     private void startBrewing(BrewingRecipe recipe) {
         // Pre-set beer to output Slot
         // This Step must be done first
-        items.set(5, recipe.assemble(this));
+        brewingInventory.setItem(5, recipe.assemble(brewingInventory));
         // Consume Ingredient & Cup;
         for (int i = 0; i < 4; i++) {
-            ItemStack ingred = items.get(i);
-            if (isBucket(ingred)) items.set(i, Items.BUCKET.getDefaultInstance());
+            ItemStack ingred = brewingInventory.getItem(i);
+            if (shouldReturnBucket(ingred)) brewingInventory.setItem(i, Items.BUCKET.getDefaultInstance());
             else ingred.shrink(1);
         }
-        items.get(4).shrink(recipe.getRequiredCupCount());
+        brewingInventory.getItem(4).shrink(recipe.getRequiredCupCount());
         // Set Remaining Time;
         remainingBrewTime = recipe.getBrewingTime();
         // Change Status Code to 1 (brewing)
@@ -154,44 +160,30 @@ public class BeerBarrelBlockEntity extends BaseContainerBlockEntity implements I
         setChanged();
     }
 
-    private boolean isBucket(ItemStack itemStack) {
-        return itemStack.getItem() instanceof BucketItem || itemStack.getItem() instanceof MilkBucketItem;
+    private boolean shouldReturnBucket(ItemStack item) {
+        return item.getItem() instanceof BucketItem || item.getItem() instanceof MilkBucketItem;
     }
 
-    private void clearPreview() {
-        items.set(5, ItemStack.EMPTY);
+    private void clearResult() {
+        brewingInventory.setItem(5, ItemStack.EMPTY);
         remainingBrewTime = 0;
         setChanged();
     }
 
-    private void showPreview(BrewingRecipe recipe) {
-        items.set(5, recipe.assemble(this));
+    private void setResult(BrewingRecipe recipe) {
+        brewingInventory.setItem(5, recipe.assemble(brewingInventory));
         remainingBrewTime = recipe.getBrewingTime();
         setChanged();
     }
 
-
-    @Nonnull
-    @Override
-    public List<ItemStack> getIngredients() {
-        NonNullList<ItemStack> sample = NonNullList.withSize(4, ItemStack.EMPTY);
-        for (int i = 0; i < 4; i++) {
-            sample.set(i, items.get(i).copy());
-        }
-        return sample;
-    }
-
-    @Nonnull
-    @Override
-    public ItemStack getCup() {
-        return items.get(4).copy();
+    public BrewingInventory getBrewingInventory() {
+        return brewingInventory;
     }
 
     @Override
     public void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
-
-        ContainerHelper.saveAllItems(tag, this.items);
+        tag.put("inv",brewingInventory.createTag());
         tag.putShort("RemainingBrewTime", (short) this.remainingBrewTime);
         tag.putShort("statusCode", (short) this.statusCode);
     }
@@ -199,11 +191,20 @@ public class BeerBarrelBlockEntity extends BaseContainerBlockEntity implements I
     @Override
     public void load(@Nonnull CompoundTag tag) {
         super.load(tag);
-
-        this.items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
-        ContainerHelper.loadAllItems(tag, this.items);
         this.remainingBrewTime = tag.getShort("RemainingBrewTime");
         this.statusCode = tag.getShort("statusCode");
+
+        // Compat previous version
+        if(tag.contains("tag"))
+            brewingInventory.fromTag((ListTag) tag.get("inv"));
+        else {
+            var items = NonNullList.withSize(6, ItemStack.EMPTY);
+            ContainerHelper.loadAllItems(tag, items);
+            for(int i=0;i<6;i++){
+                brewingInventory.setItem(i,items.get(i));
+            }
+        }
+
     }
 
     @Override
@@ -211,20 +212,10 @@ public class BeerBarrelBlockEntity extends BaseContainerBlockEntity implements I
         return Component.translatable("block.drinkbeer.beer_barrel");
     }
 
-    @Override
-    protected Component getDefaultName() {
-        return Component.translatable("block.drinkbeer.beer_barrel");
-    }
-
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int id, Inventory inventory, Player player) {
-        return new BeerBarrelMenu(id, this, syncData, inventory, this);
-    }
-
-    @Override
-    protected AbstractContainerMenu createMenu(int p_58627_, Inventory p_58628_) {
-        return null;
+        return new BeerBarrelMenu(id, brewingInventory, syncData, inventory, this);
     }
 
     @Override
@@ -234,77 +225,146 @@ public class BeerBarrelBlockEntity extends BaseContainerBlockEntity implements I
 
     @Nullable
     @Override
-    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @Override
     public CompoundTag getUpdateTag() {
         CompoundTag tag = super.getUpdateTag();
-        ContainerHelper.saveAllItems(tag, this.items);
+        tag.put("inv",brewingInventory.createTag());
         tag.putShort("RemainingBrewTime", (short) this.remainingBrewTime);
         return tag;
     }
 
     @Override
     public void handleUpdateTag(CompoundTag tag) {
-        ContainerHelper.loadAllItems(tag, this.items);
+        brewingInventory.fromTag((ListTag) tag.get("inv"));
         this.remainingBrewTime = tag.getShort("RemainingBrewTime");
     }
 
     @Override
-    public int getContainerSize() {
-        return items.size();
+    public void invalidateCaps() {
+        super.invalidateCaps();
+        handler.invalidate();
     }
 
+    @NotNull
     @Override
-    public boolean isEmpty() {
-        for (ItemStack itemstack : this.items) {
-            if (!itemstack.isEmpty()) {
+    public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+        if(cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && (side==null || side==Direction.DOWN))
+            return handler.cast();
+        return super.getCapability(cap, side);
+    }
+
+    static class BrewingInventory extends SimpleContainer implements IBrewingInventory {
+        BeerBarrelBlockEntity be;
+
+        public BrewingInventory(BeerBarrelBlockEntity be) {
+            super(6);
+            this.be = be;
+        }
+
+        @NotNull
+        @Override
+        public List<ItemStack> getIngredients() {
+            List<ItemStack> ret = new ArrayList<>();
+            if(isEmpty()) return ret;
+            // TODO need check recipe for this change;
+            for(int i=0;i<4;i++){
+                if(!getItem(i).isEmpty()) ret.add(getItem(i));
+            }
+            return ret;
+        }
+
+        @NotNull
+        @Override
+        public ItemStack getCup() {
+            return getItem(5);
+        }
+
+        @Override
+        public boolean canPlaceItem(int pIndex, ItemStack pStack) {
+            return super.canPlaceItem(pIndex, pStack);
+        }
+
+
+        @Override
+        public boolean stillValid(Player pPlayer) {
+            if (be.level.getBlockEntity(be.worldPosition) != be) {
                 return false;
+            } else {
+                return !(pPlayer.distanceToSqr((double) be.worldPosition.getX() + 0.5D, (double) be.worldPosition.getY() + 0.5D, (double) be.worldPosition.getZ() + 0.5D) > 64.0D);
             }
         }
-        return true;
-    }
 
-    @Override
-    public ItemStack getItem(int p_70301_1_) {
-        return p_70301_1_ >= 0 && p_70301_1_ < this.items.size() ? this.items.get(p_70301_1_) : ItemStack.EMPTY;
-    }
 
-    @Override
-    public ItemStack removeItem(int p_70298_1_, int p_70298_2_) {
-        return ContainerHelper.removeItem(this.items, p_70298_1_, p_70298_2_);
-    }
+            @Override
+        public void fromTag(ListTag pContainerNbt) {
+            for(int i = 0; i < 6; ++i) {
+                ItemStack itemstack = ItemStack.of(pContainerNbt.getCompound(i));
+                if (!itemstack.isEmpty()) this.setItem(i,itemstack);
+            }
+        }
 
-    @Override
-    public ItemStack removeItemNoUpdate(int p_70304_1_) {
-        return ContainerHelper.takeItem(this.items, p_70304_1_);
-    }
-
-    @Override
-    public void setItem(int p_70299_1_, ItemStack p_70299_2_) {
-        if (p_70299_1_ >= 0 && p_70299_1_ < this.items.size()) {
-            this.items.set(p_70299_1_, p_70299_2_);
+        @Override
+        public ListTag createTag() {
+            ListTag listtag = new ListTag();
+            for(int i = 0; i < 6; ++i)
+                listtag.add(getItem(i).save(new CompoundTag()));
+            return listtag;
         }
     }
 
-    @Override
-    public int getMaxStackSize() {
-        return IBrewingInventory.super.getMaxStackSize();
-    }
+    static class BarrelInvWrapper implements IItemHandlerModifiable{
 
-    @Override
-    public boolean stillValid(Player p_70300_1_) {
-        if (this.level.getBlockEntity(this.worldPosition) != this) {
+        private BrewingInventory brewingInventory;
+        private BeerBarrelBlockEntity be;
+
+        public BarrelInvWrapper(BeerBarrelBlockEntity be) {
+            this.brewingInventory = be.brewingInventory;
+            this.be = be;
+        }
+
+        @Override
+        public void setStackInSlot(int slot, @NotNull ItemStack stack) {
+            // Well I do want to do nothing here but....
+            brewingInventory.setItem(5,stack);
+        }
+
+        @Override
+        public int getSlots() {
+            return 1;
+        }
+
+        @Override
+        public @NotNull ItemStack getStackInSlot(int slot) {
+            if(be.statusCode==2) return ItemStack.EMPTY;
+            return brewingInventory.getItem(5);
+        }
+
+        @Override
+        public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
+            return stack;
+        }
+
+        @Override
+        public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
+            if(be.statusCode==2) return ItemStack.EMPTY;
+            var ret = brewingInventory.getItem(5).copy();
+            if(simulate) brewingInventory.setItem(5,ItemStack.EMPTY);
+            return ret;
+        }
+
+        @Override
+        public int getSlotLimit(int slot) {
+            return 64;
+        }
+
+        @Override
+        public boolean isItemValid(int slot, @NotNull ItemStack stack) {
             return false;
-        } else {
-            return !(p_70300_1_.distanceToSqr((double) this.worldPosition.getX() + 0.5D, (double) this.worldPosition.getY() + 0.5D, (double) this.worldPosition.getZ() + 0.5D) > 64.0D);
         }
     }
 
-    @Override
-    public void clearContent() {
-        this.items.clear();
-    }
 }
