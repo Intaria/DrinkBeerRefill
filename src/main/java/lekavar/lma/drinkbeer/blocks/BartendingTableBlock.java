@@ -16,6 +16,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
@@ -88,21 +89,36 @@ public class BartendingTableBlock extends BaseEntityBlock {
                         return InteractionResult.CONSUME;
                     } else {
                         var tryTake = bartendingTableBlockEntity.takeBeer(false);
-                        if(!tryTake.isEmpty()) player.setItemInHand(hand,tryTake);
+                        if(!tryTake.isEmpty()){
+                            boolean flag = player.getInventory().add(tryTake);
+                            if (!flag) {
+                                ItemEntity itementity = player.drop(tryTake, false);
+                                if (itementity != null) {
+                                    itementity.setNoPickUpDelay();
+                                    itementity.setOwner(player.getUUID());
+                                }
+                            }
+                        }
                     }
                 } else{
                     if (itemStack.getItem() instanceof MixedBeerBlockItem || itemStack.getItem() instanceof BeerMugItem) {
-                        var result = bartendingTableBlockEntity.placeBeer(itemStack);
+                        var placeIn = itemStack.copy();
+                        placeIn.setCount(1);
+                        var result = bartendingTableBlockEntity.placeBeer(placeIn);
                         if(result){
                             world.playSound(null, pos, SoundEvents.WOOD_PLACE, SoundSource.BLOCKS, 1f, 1f);
-                            if(!player.getAbilities().instabuild) itemStack.shrink(1);
+                            if(!player.getAbilities().instabuild)
+                                itemStack.shrink(1);
                         }
                         return InteractionResult.CONSUME;
                     } else if (itemStack.getItem() instanceof SpiceBlockItem){
-                        var result = bartendingTableBlockEntity.putSpice(itemStack);
+                        var placeIn = itemStack.copy();
+                        placeIn.setCount(1);
+                        var result = bartendingTableBlockEntity.putSpice(placeIn);
                         if(result){
                             world.playSound(null, pos, SoundEvents.WOOD_PLACE, SoundSource.BLOCKS, 1f, 1f);
-                            if(!player.getAbilities().instabuild) itemStack.shrink(1);
+                            if(!player.getAbilities().instabuild)
+                                itemStack.shrink(1);
                         }
                     } return InteractionResult.CONSUME;
                 }
