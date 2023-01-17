@@ -24,7 +24,7 @@ import java.util.List;
 
 public class MixedBeerBlockItem extends BeerBlockItem {
     public MixedBeerBlockItem(Block block) {
-        super(block, new Item.Properties().tab(ModCreativeTab.BEER).stacksTo(1)
+        super(block, new Item.Properties().stacksTo(1)
                 .food(new FoodProperties.Builder().alwaysEat().build()));
     }
 

@@ -1,16 +1,11 @@
 # DrinkBeer Refill
 This is an unofficial fork of **Drink Beer forge** mod, 
 providing full fabric-3.0.2 version features in 1.19.2+ forge version and built-in JEI/Jade support, as well as other new features.
-### Important Notice
-* About "providing full fabric-3.0.2 version features"
-> some features may be changed in current and future versions.
 
 ## Why refill?
 Reasons are simple: 
 * New ways to interact (e.g. Place Beer in Bartending Table and see it)
-* (Partial Implement) Automation support by implementing Capability (e.g. Hopper supports Bartending Table)
-* (WIP) New Beers & New Flavors
-* (WIP) Extendable Api
+* (Partial) Automation support by implementing Capability (e.g. Hopper supports Bartending Table)
 * Extension and Compat With Other Mods (e.g. Keg support Alcocraft Recipe) `This is now suspended since alcocraft 1.19.2 crash problem, See issue Alcocraft#10`
 
 ## Credit
