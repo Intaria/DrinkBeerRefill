@@ -18,13 +18,6 @@ public class SoundEventRegistry {
     public static final RegistryObject<SoundEvent> LEKAS_CALL_BELL_TINKLE = register("lekas_call_bell_tinkle");
     public static final RegistryObject<SoundEvent>[] NIGHT_HOWL = new RegistryObject[]{register("night_howl0"),register("night_howl1"),register("night_howl2"), register("night_howl3")};
 
-    public static final RegistryObject<SoundEvent> UNPACKING = register("unpacking");
-    public static final RegistryObject<SoundEvent> BARTENDING_TABLE_OPEN = register("bartending_table_open");
-    public static final RegistryObject<SoundEvent> BARTENDING_TABLE_CLOSE = register("bartending_table_close");
-    public static final RegistryObject<SoundEvent> TRADEBOX_OPEN = register("tradebox_open");
-    public static final RegistryObject<SoundEvent> TRADEBOX_CLOSE = register("tradebox_close");
-
-
     private static RegistryObject<SoundEvent> register(String name) {
         return SOUNDS.register(name, () -> new SoundEvent(new ResourceLocation("drinkbeer", name)));
     }

@@ -2,7 +2,6 @@ package lekavar.lma.drinkbeer;
 
 import com.mojang.logging.LogUtils;
 import lekavar.lma.drinkbeer.compat.ModCompat;
-import lekavar.lma.drinkbeer.networking.NetWorking;
 import lekavar.lma.drinkbeer.registries.*;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
@@ -33,8 +32,6 @@ public class DrinkBeer {
         RecipeRegistry.RECIPE_TYPES.register(modEventBus);
         RecipeRegistry.RECIPE_SERIALIZERS.register(modEventBus);
         ParticleTypeRegistry.PARTICLES.register(modEventBus);
-
-        modEventBus.addListener(NetWorking::init);
 
         forgeEventBus.addListener(ModCompat::injectRecipes);
 

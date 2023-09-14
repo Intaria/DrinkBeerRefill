@@ -97,13 +97,4 @@ public enum Beers {
     public static int size() {
         return values().length;
     }
-
-    public static Beers byRecipeBoardBlock(Block recipeBoardBlock) {
-        String beerName = recipeBoardBlock.getName().getString().replace("block.drinkbeer.recipe_board_", "");
-        Optional<Beers> matchedBeer = Arrays.stream(values())
-                .filter(beer -> beer.beerItem.getName(beer.beerItem.getDefaultInstance()).equals("block.drinkbeer." + beerName))
-                .findFirst();
-        return matchedBeer.isPresent() ? matchedBeer.get() : null;
-    }
-
 }

@@ -38,7 +38,7 @@ public class ModCreativeTab {
         @Override
         public void fillItemList(NonNullList<ItemStack> itemStackNonNullList) {
             super.fillItemList(itemStackNonNullList);
-            // Order: Beer Barrel, Empty Mug, Call Bell, Recipe Board Package, Recipe Board
+            // Order: Beer Barrel, Empty Mug, Call Bell
             itemStackNonNullList.sort(new Comparator<ItemStack>() {
                 @Override
                 public int compare(ItemStack o1, ItemStack o2) {
@@ -55,8 +55,6 @@ public class ModCreativeTab {
                 if(block instanceof BeerBarrelBlock) return 1;
                 else if(block instanceof BeerMugBlock) return 2;
                 else if(block instanceof CallBellBlock) return 3;
-                else if(block instanceof RecipeBoardPackageBlock) return 4;
-                else if(block instanceof RecipeBoardBlock) return 5;
             }
             return 9999;
         }
